@@ -68,8 +68,10 @@ const Navbar = () => {
       {/* Right - Auth Buttons */}
       <div>
         <div className="flex gap-2">
-            <Button>login</Button>
-            <Button>register</Button>
+           <NavLink to='/login'> <Button>login</Button></NavLink>
+            <NavLink to='/register'>
+                <Button>register</Button>
+            </NavLink>
         </div>
       </div>
       {/* <div className="flex gap-2">
