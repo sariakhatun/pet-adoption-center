@@ -1,0 +1,95 @@
+import React from "react"
+import { NavLink, Link } from "react-router-dom"
+import { Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu"
+
+import Swal from "sweetalert2"
+import PetNectLogo from "../logo/PetNectLogo"
+
+const Navbar = () => {
+  //const { user, logOut } = useAuth()
+
+//   const handleLogOut = () => {
+//     logOut()
+//       .then(() => {
+//         Swal.fire({
+//           position: "top-end",
+//           icon: "success",
+//           title: "Logged Out Successfully",
+//           showConfirmButton: false,
+//           timer: 1500,
+//         })
+//       })
+//       .catch((error) => {
+//         console.log(error)
+//       })
+//   }
+
+  const navItems = (
+    <>
+      <NavLink to="/" className="hover:text-[#34B7A7]">Home</NavLink>
+      <NavLink to="/petListing" className="hover:text-[#34B7A7]">Pet Listing</NavLink>
+      <NavLink to="/donationCampaigns" className="hover:text-[#34B7A7]">Donation Campaigns</NavLink>
+      
+    </>
+  )
+
+  return (
+    <nav className="bg-white shadow-sm w-full px-4 py-3 flex justify-between items-center">
+      {/* Left - Logo + Mobile menu */}
+      <div className="flex items-center gap-0 lg:gap-4">
+        {/* Mobile Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="md:hidden">
+            <Button variant="ghost" size="icon">
+              <Menu />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="flex flex-col space-y-2">
+            {navItems}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Logo */}
+        <PetNectLogo></PetNectLogo>
+      </div>
+
+      {/* Center - Desktop Links */}
+      <div className="hidden md:flex gap-6 font-medium text-gray-700">
+        {navItems}
+      </div>
+
+      {/* Right - Auth Buttons */}
+      <div>
+        <div className="flex gap-2">
+            <Button>login</Button>
+            <Button>register</Button>
+        </div>
+      </div>
+      {/* <div className="flex gap-2">
+        {user ? (
+          <Button onClick={handleLogOut} className="bg-[#CAEB66] hover:bg-[#b2d959]">
+            Logout
+          </Button>
+        ) : (
+          <>
+            <Link to="/login">
+              <Button className="bg-[#CAEB66] hover:bg-[#b2d959]">Sign In</Button>
+            </Link>
+            <Link to="/register">
+              <Button className="bg-[#CAEB66] hover:bg-[#b2d959]">Sign Up</Button>
+            </Link>
+          </>
+        )}
+      </div> */}
+    </nav>
+  )
+}
+
+export default Navbar
