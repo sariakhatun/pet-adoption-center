@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import axios from "axios";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
+import { useNavigate } from "react-router";
 
 const categoryOptions = [
   { value: "dog", label: "Dog" },
@@ -17,7 +19,9 @@ const categoryOptions = [
 ];
 
 const AddAPet = () => {
+  let axiosSecure = useAxiosSecure();
   const [imageUrl, setImageUrl] = useState(null);
+  let navigate = useNavigate();
   const {
     register,
     control,
@@ -27,14 +31,19 @@ const AddAPet = () => {
   } = useForm();
 
   const handleImageUpload = async (e) => {
-    const image = e.target.files[0]
-   // console.log(image)
+    const image = e.target.files[0];
+    // console.log(image)
     let formData = new FormData();
-    formData.append('image',image);
+    formData.append("image", image);
 
-    let res = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Upload_Key}`,formData)
-    console.log(res.data.data.url)
-    setImageUrl(res.data.data.url)
+    let res = await axios.post(
+      `https://api.imgbb.com/1/upload?key=${
+        import.meta.env.VITE_Image_Upload_Key
+      }`,
+      formData
+    );
+    console.log(res.data.data.url);
+    setImageUrl(res.data.data.url);
   };
 
   const onSubmit = async (data) => {
@@ -50,18 +59,30 @@ const AddAPet = () => {
       adopted: false,
       createdAt: new Date().toISOString(),
     };
+    console.log("pet added", petData);
 
-    // try {
-    //   await axios.post("/api/pets", petData); // replace with your actual API endpoint
-      Swal.fire("Success", "Pet added successfully", "success");
-      reset();
-      setImageUrl(null);
-    // } catch (err) {
-    //   console.error(err);
-    //   Swal.fire("Error", "Failed to add pet", "error");
-    // }
+    //save data to the server
+    axiosSecure
+      .post("/pets", petData)
+      .then((res) => {
+        console.log("in db", res.data);
+        if (res.data.insertedId) {
+            //todo:redirect to he my pet section
+            //navigate('/dashboard/my-pets')
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Pet Added Successfully",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    console.log('pet added',petData)
+  
   };
 
   return (
@@ -71,22 +92,37 @@ const AddAPet = () => {
         {/* Pet Image Upload */}
         <div>
           <Label>Pet Image</Label>
-          <Input type="file" {...register('photo', { required: "Pet Image is required" })} accept="image/*"  onChange={handleImageUpload}/>
+          <Input
+            type="file"
+            {...register("photo", { required: "Pet Image is required" })}
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
           {/* {!imageUrl && <p className="text-red-500 text-sm">Image is required</p>} */}
         </div>
 
         {/* Pet Name */}
         <div>
           <Label htmlFor="petName">Pet Name</Label>
-          <Input id="petName" {...register("petName", { required: "Pet name is required" })} />
-          {errors.petName && <p className="text-red-500 text-sm">{errors.petName.message}</p>}
+          <Input
+            id="petName"
+            {...register("petName", { required: "Pet name is required" })}
+          />
+          {errors.petName && (
+            <p className="text-red-500 text-sm">{errors.petName.message}</p>
+          )}
         </div>
 
         {/* Pet Age */}
         <div>
           <Label htmlFor="petAge">Pet Age</Label>
-          <Input id="petAge" {...register("petAge", { required: "Pet age is required" })} />
-          {errors.petAge && <p className="text-red-500 text-sm">{errors.petAge.message}</p>}
+          <Input
+            id="petAge"
+            {...register("petAge", { required: "Pet age is required" })}
+          />
+          {errors.petAge && (
+            <p className="text-red-500 text-sm">{errors.petAge.message}</p>
+          )}
         </div>
 
         {/* Pet Category */}
@@ -131,7 +167,9 @@ const AddAPet = () => {
             })}
           />
           {errors.shortDescription && (
-            <p className="text-red-500 text-sm">{errors.shortDescription.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.shortDescription.message}
+            </p>
           )}
         </div>
 
@@ -146,7 +184,9 @@ const AddAPet = () => {
             })}
           />
           {errors.longDescription && (
-            <p className="text-red-500 text-sm">{errors.longDescription.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.longDescription.message}
+            </p>
           )}
         </div>
 

@@ -16,6 +16,7 @@ import PetListing from "@/pages/PetListing/PetListing";
 import {
   createBrowserRouter,
 } from "react-router";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -49,31 +50,45 @@ export const router = createBrowserRouter([
         },
          {
             path:'/dashboard',
-            Component:Dashboard,
+           element:<PrivateRoute>
+            <Dashboard></Dashboard>
+           </PrivateRoute>,
             children:[
               {
                 path:'add-pet',
-                Component:AddAPet
+               element:<PrivateRoute>
+                <AddAPet></AddAPet>
+               </PrivateRoute>
               },
               {
                 path:'my-pets',
-                Component:MyPets
+                element:<PrivateRoute>
+                  <MyPets></MyPets>
+                </PrivateRoute>
               },
               {
                 path:'adoption-requests',
-                Component:AdoptionRequest
+                element:<PrivateRoute>
+                  <AdoptionRequest></AdoptionRequest>
+                </PrivateRoute>
               },
               {
                 path:'create-campaign',
-                Component:CreateDonationCampaign
+               element:<PrivateRoute>
+                <CreateDonationCampaign></CreateDonationCampaign>
+               </PrivateRoute>
               },
               {
                 path:'my-campaigns',
-                Component:MyDonationCampaigns
+               element:<PrivateRoute>
+                <MyDonationCampaigns></MyDonationCampaigns>
+               </PrivateRoute>
               },
               {
                 path:'my-donations',
-                Component:MyDonation
+                element:<PrivateRoute>
+                  <MyDonation></MyDonation>
+                </PrivateRoute>
               },
             ]
         },
