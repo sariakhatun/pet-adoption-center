@@ -5,7 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { FaGoogle, FaGithub } from "react-icons/fa"
 import { useState } from "react"
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import useAuth from '@/hooks/useAuth';
+import Swal from 'sweetalert2';
+import GoogleLogin from './GoogleLogin';
+import GithubLogin from './GithubLogin';
+import axios from 'axios';
 const Register = () => {
      const {
     register,
@@ -13,17 +18,58 @@ const Register = () => {
     formState: { errors },
   } = useForm();
    const [imagePreview, setImagePreview] = useState(null);
-
+   let {createUser,updateUserProfile}=useAuth()
+  let navigate = useNavigate()
    const onSubmit = (data) => {
     console.log("Registering user:", data)
     // TODO: Upload image to cloud and handle registration
+    console.log(createUser)
+    createUser(data.email,data.password)
+    .then(res=>{
+      console.log(res.user)
+
+      //update userinfo in the database
+
+
+      //update user profile in firebase
+      let userProfile ={
+        displayName : data.name,
+        photoURL : imagePreview
+
+
+      }
+      updateUserProfile(userProfile)
+      .then(()=>{
+        console.log('profile name and image updated',)
+      })
+      .catch(error=>{
+        console.log(error)
+      })
+
+
+       Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Registered Successfully",
+                showConfirmButton: false,
+                timer: 1500,
+              })
+              navigate('/')
+    })
+    .catch(error=>{
+      console.log(error)
+    })
   }
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setImagePreview(URL.createObjectURL(file))
-    }
+  const handleFileChange =async (e) => {
+    const image = e.target.files[0]
+   // console.log(image)
+    let formData = new FormData();
+    formData.append('image',image);
+
+    let res = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Upload_Key}`,formData)
+    console.log(res.data.data.url)
+    setImagePreview(res.data.data.url)
   }
     return (
     <section className="max-w-md mx-auto mt-12 p-6 bg-white shadow-lg rounded-xl">
@@ -111,20 +157,8 @@ const Register = () => {
 
       {/* Social Login */}
       <div className="mt-6 space-y-3">
-        <Button
-          variant="outline"
-          className="w-full flex items-center justify-center gap-2"
-        >
-          <FaGoogle className="text-red-500" />
-          Continue with Google
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full flex items-center justify-center gap-2"
-        >
-          <FaGithub className="text-black" />
-          Continue with GitHub
-        </Button>
+        <GoogleLogin></GoogleLogin>
+        <GithubLogin></GithubLogin>
       </div>
     </section>
   )
