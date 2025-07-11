@@ -19,6 +19,7 @@ import {
 import PrivateRoute from "./PrivateRoute";
 import UpdatePet from "@/dashboard/UserDashboard/UpdatePet";
 import EditDonationCampaign from "@/dashboard/UserDashboard/EditDonationCampaign";
+import PetDetails from "@/pages/Authentication/PetDetails";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
         {
             path:'/petListing',
             Component:PetListing,
+        },
+        {
+            path:'/petDetails/:id',
+            Component:PetDetails,
         },
         {
             path:'/donationCampaigns',
