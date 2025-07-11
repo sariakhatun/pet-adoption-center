@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 // ✅ Use relative path (this will work)
-import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
 
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
@@ -12,20 +12,35 @@ import {
   FaDonate,
   FaRegListAlt,
   FaHandsHelping,
+  FaHome,
 } from "react-icons/fa";
 const Dashboard = () => {
-  
   return (
     <div className="flex min-h-screen bg-white">
       {/* Sidebar for desktop */}
       <aside className="hidden lg:flex flex-col w-72 bg-[#F3F4F6] p-6 shadow-lg">
-        
         <nav className="flex flex-col space-y-2">
+        
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`
+            }
+          >
+            <FaHome />
+            Dashboard Home
+          </NavLink>
           <NavLink
             to="/dashboard/add-pet"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -37,7 +52,9 @@ const Dashboard = () => {
             to="/dashboard/my-pets"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -49,7 +66,9 @@ const Dashboard = () => {
             to="/dashboard/adoption-requests"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -61,7 +80,9 @@ const Dashboard = () => {
             to="/dashboard/create-campaign"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -73,7 +94,9 @@ const Dashboard = () => {
             to="/dashboard/my-campaigns"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -85,7 +108,9 @@ const Dashboard = () => {
             to="/dashboard/my-donations"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
@@ -108,14 +133,21 @@ const Dashboard = () => {
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="w-64 p-6 bg-[#F3F4F6] shadow-lg lg:hidden">
-          <h2 className="text-2xl font-bold mb-6 text-[#34B7A7]">User Dashboard</h2>
+        <SheetContent
+          side="left"
+          className="w-64 p-6 bg-[#F3F4F6] shadow-lg lg:hidden"
+        >
+          <h2 className="text-2xl font-bold mb-6 text-[#34B7A7]">
+            User Dashboard
+          </h2>
           <nav className="flex flex-col space-y-2">
             <NavLink
               to="/dashboard/add-pet"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200"
                 }`
               }
             >
@@ -127,7 +159,9 @@ const Dashboard = () => {
               to="/dashboard/my-pets"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200"
                 }`
               }
             >
@@ -139,7 +173,9 @@ const Dashboard = () => {
               to="/dashboard/adoption-requests"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200"
                 }`
               }
             >
@@ -151,7 +187,9 @@ const Dashboard = () => {
               to="/dashboard/create-campaign"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200"
                 }`
               }
             >
@@ -163,7 +201,9 @@ const Dashboard = () => {
               to="/dashboard/my-campaigns"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200"
                 }`
               }
             >
@@ -175,7 +215,9 @@ const Dashboard = () => {
               to="/dashboard/my-donations"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200"
                 }`
               }
             >

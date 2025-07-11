@@ -1,27 +1,60 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
+import useAuth from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import Swal from "sweetalert2";
-import axios from "axios";
-import useAxiosSecure from "@/hooks/useAxiosSecure";
-import { useNavigate } from "react-router";
-import useAuth from "@/hooks/useAuth";
 
-const CreateDonationCampaign = () => {
-  const [imageUrl, setImageUrl] = useState(null);
+const EditDonationCampaign = () => {
+  const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
+  const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
-    reset,
   } = useForm();
+
+  // Fetch existing campaign data to prefill the form
+  useEffect(() => {
+    const fetchCampaign = async () => {
+      try {
+        const res = await axiosSecure.get(`/donation-campaigns?email=${user.email}`);
+        const campaign = res.data.find(c => c._id === id);
+        if (!campaign) {
+          Swal.fire("Error", "Campaign not found", "error");
+          navigate("/dashboard/my-campaigns");
+          return;
+        }
+
+        // Prefill form fields
+        setValue("petName", campaign.petName);
+        setValue("maxDonationAmount", campaign.maxDonationAmount);
+        setValue("donationDeadline", campaign.donationDeadline);
+        setValue("shortDescription", campaign.shortDescription);
+        setValue("longDescription", campaign.longDescription);
+        setImageUrl(campaign.petImage || null);
+      } catch (err) {
+        console.error("Failed to fetch campaign:", err);
+        Swal.fire("Error", "Failed to load campaign data", "error");
+        navigate("/dashboard/my-campaigns");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCampaign();
+  }, [id, user.email, setValue, axiosSecure, navigate]);
 
   const handleImageUpload = async (e) => {
     const image = e.target.files[0];
@@ -36,6 +69,7 @@ const CreateDonationCampaign = () => {
         formData
       );
       setImageUrl(res.data.data.url);
+      Swal.fire("Success", "Image uploaded", "success");
     } catch (err) {
       console.error("Image upload error:", err);
       Swal.fire("Error", "Image upload failed", "error");
@@ -48,43 +82,38 @@ const CreateDonationCampaign = () => {
       return;
     }
 
-    const campaignData = {
-      petName: data.petName,                    // Added petName
+    const updatedData = {
+      petName: data.petName,
       petImage: imageUrl,
       maxDonationAmount: parseFloat(data.maxDonationAmount),
-      donatedAmount: 0,                         // default to 0 on creation
-      donators: [],                            // default empty array on creation
-      paused: false,                           // default not paused
       donationDeadline: data.donationDeadline,
       shortDescription: data.shortDescription,
       longDescription: data.longDescription,
-      createdBy: user.email,
-      createdAt: new Date().toISOString(),
     };
 
     try {
-      const res = await axiosSecure.post("/donation-campaigns", campaignData);
-      if (res.data.insertedId || res.data.acknowledged) {
+      const res = await axiosSecure.patch(`/donation-campaigns/${id}`, updatedData);
+      if (res.data.acknowledged) {
         Swal.fire({
           icon: "success",
-          title: "Donation Campaign Created",
+          title: "Campaign updated successfully",
           showConfirmButton: false,
           timer: 1500,
         });
-        reset();
-        setImageUrl(null);
         navigate("/dashboard/my-campaigns");
       }
     } catch (err) {
-      console.error("Campaign creation error:", err);
-      Swal.fire("Error", "Failed to create campaign", "error");
+      console.error("Update failed:", err);
+      Swal.fire("Error", "Failed to update campaign", "error");
     }
   };
+
+  if (loading) return <p className="p-6">Loading...</p>;
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow space-y-6 my-12">
       <h2 className="text-2xl font-semibold text-[#34B7A7] mb-6">
-        Create Donation Campaign
+        Edit Donation Campaign
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -176,11 +205,11 @@ const CreateDonationCampaign = () => {
 
         {/* Submit Button */}
         <Button type="submit" className="bg-[#34B7A7]" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Create Campaign"}
+          {isSubmitting ? "Updating..." : "Update Campaign"}
         </Button>
       </form>
     </div>
   );
 };
 
-export default CreateDonationCampaign;
+export default EditDonationCampaign;

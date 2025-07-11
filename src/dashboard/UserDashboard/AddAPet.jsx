@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useNavigate } from "react-router";
+import useAuth from "@/hooks/useAuth";
 
 const categoryOptions = [
   { value: "dog", label: "Dog" },
@@ -21,6 +22,7 @@ const categoryOptions = [
 const AddAPet = () => {
   let axiosSecure = useAxiosSecure();
   const [imageUrl, setImageUrl] = useState(null);
+  let {user}=useAuth()
   let navigate = useNavigate();
   const {
     register,
@@ -40,8 +42,11 @@ const AddAPet = () => {
       `https://api.imgbb.com/1/upload?key=${
         import.meta.env.VITE_Image_Upload_Key
       }`,
-      formData
+      formData,
+       { timeout: 10000 }
     );
+    console.log('import',import.meta.env.VITE_Image_Upload_Key);
+
     console.log(res.data.data.url);
     setImageUrl(res.data.data.url);
   };
@@ -57,6 +62,7 @@ const AddAPet = () => {
       petImage: imageUrl,
       petCategory: data.petCategory.value,
       adopted: false,
+      userEmail: user.email,
       createdAt: new Date().toISOString(),
     };
     console.log("pet added", petData);
