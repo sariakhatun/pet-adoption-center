@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import {
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 const DonationCampaigns = () => {
   const axiosSecure = useAxiosSecure();
   const { ref, inView } = useInView();
+  const queryClient = useQueryClient(); // <-- get queryClient for cache management
 
   const {
     data,
@@ -21,6 +22,7 @@ const DonationCampaigns = () => {
     hasNextPage,
     isLoading,
     isFetchingNextPage,
+    refetch, // optional, in case you want to manually refresh
   } = useInfiniteQuery({
     queryKey: ["donationCampaigns"],
     queryFn: async ({ pageParam = 0 }) => {
@@ -30,16 +32,19 @@ const DonationCampaigns = () => {
       return res.data;
     },
     getNextPageParam: (lastPage, allPages) => {
-      // If less than 6 items, there’s no more data
       return lastPage.length < 6 ? undefined : allPages.length;
     },
   });
 
+  // Auto fetch next page when last item comes into view
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
     }
   }, [inView, hasNextPage, fetchNextPage]);
+
+  // OPTIONAL: Listen for cache update and trigger refetch if needed
+  // React Query usually handles this automatically if cache is updated externally.
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -48,7 +53,7 @@ const DonationCampaigns = () => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.pages.map((page) =>
+        {data?.pages.map((page, pageIndex) =>
           page.map((campaign) => (
             <Card key={campaign._id} className="shadow-md hover:shadow-lg">
               <CardHeader className="p-0">
@@ -69,13 +74,13 @@ const DonationCampaigns = () => {
                   <strong>Max Donation:</strong> ৳{campaign.maxDonationAmount}
                 </p>
                 <p className="text-sm">
-                  <strong>Donated:</strong> ৳{campaign.donatedAmount}
+                  <strong>Donated:</strong> ৳{campaign.donatedAmount || 0}
                 </p>
                 <Button
                   variant="outline"
                   className="w-full mt-2"
                   onClick={() =>
-                    window.location.href = `/donation-details/${campaign._id}`
+                    (window.location.href = `/donation-details/${campaign._id}`)
                   }
                 >
                   View Details

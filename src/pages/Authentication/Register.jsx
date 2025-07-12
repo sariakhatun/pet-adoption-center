@@ -47,7 +47,13 @@ const Register = () => {
       })
 
 
-      a
+       Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Registered Successfully",
+                showConfirmButton: false,
+                timer: 1500,
+              })
               navigate('/')
     })
     .catch(error=>{

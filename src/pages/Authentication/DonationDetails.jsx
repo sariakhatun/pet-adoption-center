@@ -37,11 +37,10 @@ const DonationDetails = () => {
     formState: { errors },
   } = useForm();
 
-  // ✅ Fetch campaign details
   const {
     data: campaign,
     isLoading,
-    refetch: refetchCampaign, // ⬅️ add refetch here
+    refetch: refetchCampaign,
   } = useQuery({
     queryKey: ["donationDetails", id],
     queryFn: async () => {
@@ -50,7 +49,6 @@ const DonationDetails = () => {
     },
   });
 
-  // Recommended campaigns
   const { data: recommended = [] } = useQuery({
     queryKey: ["recommendedCampaigns"],
     queryFn: async () => {
@@ -166,26 +164,29 @@ const DonationDetails = () => {
           donatedAt: new Date(),
         };
 
-        const res = await axiosSecure.post("/donations", donationInfo);
+        try {
+          const res = await axiosSecure.post("/donations", donationInfo);
+          if (res.data.insertedId) {
+            await refetchCampaign();
+            await Swal.fire({
+              icon: "success",
+              title: "Thank you for your donation!",
+              timer: 1500,
+              showConfirmButton: false,
+              position: "top-end",
+            });
 
-        if (res.data.insertedId) {
-          // ✅ refetch updated campaign data to update donatedAmount
-          await refetchCampaign();
-
-          await Swal.fire({
-            icon: "success",
-            title: "Thank you for your donation!",
-            timer: 1500,
-            showConfirmButton: false,
-            position: "top-end",
-          });
-
-          setDonorInfo(null);
-          reset();
-          setCardDetails(null);
-          setIsDialogOpen(false);
-        } else {
-          await Swal.fire("Error", "Something went wrong saving donation", "error");
+            setDonorInfo(null);
+            reset();
+            setCardDetails(null);
+            setIsDialogOpen(false);
+          }
+        } catch (error) {
+          if (error.response?.status === 403) {
+            Swal.fire("Donation Blocked", error.response.data.error, "warning");
+          } else {
+            Swal.fire("Error", error.message || "Donation failed", "error");
+          }
         }
       }
     } catch (err) {
@@ -205,7 +206,6 @@ const DonationDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
-      {/* Campaign Details */}
       <img
         src={campaign.petImage}
         alt={campaign.petName}
@@ -224,16 +224,22 @@ const DonationDetails = () => {
         <strong>Deadline:</strong>{" "}
         {new Date(campaign.donationDeadline).toLocaleDateString()}
       </p>
+      {campaign.paused && (
+        <p className="text-red-600 font-semibold my-4">
+          ⚠️ This campaign is currently paused. Donations are not accepted at
+          this time.
+        </p>
+      )}
       <p className="text-gray-700 mt-4 whitespace-pre-line">
         {campaign.longDescription}
       </p>
 
-      {/* Donate Now Modal */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button
             className="mt-6 bg-[#34B7A7] text-white hover:bg-[#2fa99b]"
             onClick={() => setIsDialogOpen(true)}
+            disabled={campaign.paused}
           >
             Donate Now
           </Button>
@@ -329,7 +335,6 @@ const DonationDetails = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Recommended Campaigns */}
       <div className="mt-12">
         <h3 className="text-2xl font-semibold mb-6 text-[#34B7A7]">
           Recommended Campaigns

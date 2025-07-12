@@ -6,7 +6,6 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog as Dialog,
-  AlertDialogTrigger as DialogTrigger,
   AlertDialogContent as DialogContent,
   AlertDialogHeader as DialogHeader,
   AlertDialogTitle as DialogTitle,
@@ -25,13 +24,14 @@ const MyDonationCampaigns = () => {
   const navigate = useNavigate();
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [donators, setDonators] = useState([]);
 
+  // Fetch only campaigns of current logged-in user
   const { data: campaigns = [], refetch } = useQuery({
     queryKey: ["my-donations", user?.email],
+    enabled: !!user?.email, // fetch only if email exists
     queryFn: async () => {
-      const res = await axiosSecure.get(
-        `/donation-campaigns?email=${user?.email}`
-      );
+      const res = await axiosSecure.get(`/my-donations-campaign?email=${user.email}`);
       return res.data;
     },
   });
@@ -79,7 +79,6 @@ const MyDonationCampaigns = () => {
           const campaign = row.original;
           return (
             <div className="flex gap-2">
-              {/* Pause / Resume */}
               <Button
                 variant={campaign.paused ? "secondary" : "destructive"}
                 size="sm"
@@ -88,24 +87,29 @@ const MyDonationCampaigns = () => {
                 {campaign.paused ? "Resume" : "Pause"}
               </Button>
 
-              {/* Edit */}
               <Button
                 size="sm"
                 className="bg-blue-500 text-white hover:bg-blue-600"
-                onClick={() =>
-                  navigate(`/dashboard/edit-donation/${campaign._id}`)
-                }
+                onClick={() => navigate(`/dashboard/edit-donation/${campaign._id}`)}
               >
                 Edit
               </Button>
 
-              {/* View Donators */}
               <Button
                 size="sm"
                 variant="outline"
-                className='bg-[#34B7A7] text-white'
-                onClick={() => {
+                className="bg-[#34B7A7] text-white"
+                onClick={async () => {
                   setSelectedCampaign(campaign);
+                  try {
+                    const res = await axiosSecure.get(
+                      `/donation-campaigns/${campaign._id}/donators`
+                    );
+                    setDonators(res.data || []);
+                  } catch (err) {
+                    console.error("Failed to fetch donators:", err);
+                    setDonators([]);
+                  }
                   setDialogOpen(true);
                 }}
               >
@@ -163,7 +167,6 @@ const MyDonationCampaigns = () => {
         </table>
       </div>
 
-      {/* ✅ View Donators Dialog (Outside Table) */}
       {selectedCampaign && (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-md">
@@ -175,15 +178,15 @@ const MyDonationCampaigns = () => {
             </DialogHeader>
 
             <div className="space-y-2 max-h-60 overflow-y-auto">
-              {(selectedCampaign?.donators || []).length === 0 ? (
+              {donators.length === 0 ? (
                 <p className="text-gray-500 text-sm">No donations yet.</p>
               ) : (
-                selectedCampaign.donators.map((donator, idx) => (
+                donators.map((donator, idx) => (
                   <div
                     key={idx}
                     className="flex justify-between py-1 text-sm border-b"
                   >
-                    <span>{donator.name}</span>
+                    <span>{donator.donorName}</span>
                     <span>৳{donator.amount}</span>
                   </div>
                 ))
