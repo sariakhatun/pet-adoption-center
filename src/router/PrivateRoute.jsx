@@ -1,10 +1,11 @@
 import useAuth from "@/hooks/useAuth";
 import React from "react";
-import { Navigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 import { Loader2 } from "lucide-react"
 
 const PrivateRoute = ({children}) => {
   let { user, loading } = useAuth();
+  let location = useLocation();
   if (loading) {
     return (
       <div className="flex justify-center items-center py-8">
@@ -14,7 +15,7 @@ const PrivateRoute = ({children}) => {
     );
   }
   if(!user){
-   return <Navigate to='/login'></Navigate>
+   return <Navigate state={{from:location.pathname}} to='/login'></Navigate>
   }
   return children;
 };
