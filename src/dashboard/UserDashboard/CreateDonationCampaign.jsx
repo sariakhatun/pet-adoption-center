@@ -71,9 +71,9 @@ const CreateDonationCampaign = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        reset();
-        setImageUrl(null);
-        navigate("/dashboard/my-campaigns");
+        //reset();
+       // setImageUrl(null);
+       // navigate("/dashboard/my-campaigns");
       }
     } catch (err) {
       console.error("Campaign creation error:", err);

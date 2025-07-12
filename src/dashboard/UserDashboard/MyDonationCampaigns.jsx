@@ -1,35 +1,35 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog as Dialog,
-  AlertDialogContent as DialogContent,
-  AlertDialogHeader as DialogHeader,
-  AlertDialogTitle as DialogTitle,
-  AlertDialogDescription as DialogDescription,
-  AlertDialogCancel as DialogClose,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import {
   getCoreRowModel,
-  useReactTable,
   getPaginationRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
 
 const MyDonationCampaigns = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
+
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [donators, setDonators] = useState([]);
 
-  // Fetch only campaigns of current logged-in user
-  const { data: campaigns = [], refetch } = useQuery({
+  const { data: campaigns = [], isLoading, error, refetch } = useQuery({
     queryKey: ["my-donations", user?.email],
-    enabled: !!user?.email, // fetch only if email exists
+    enabled: !!user?.email,
     queryFn: async () => {
       const res = await axiosSecure.get(`/my-donations-campaign?email=${user.email}`);
       return res.data;
@@ -68,7 +68,7 @@ const MyDonationCampaigns = () => {
               <div
                 className="bg-green-500 h-4 rounded-full"
                 style={{ width: `${percentage}%` }}
-              ></div>
+              />
             </div>
           );
         },
@@ -86,7 +86,6 @@ const MyDonationCampaigns = () => {
               >
                 {campaign.paused ? "Resume" : "Pause"}
               </Button>
-
               <Button
                 size="sm"
                 className="bg-blue-500 text-white hover:bg-blue-600"
@@ -94,7 +93,6 @@ const MyDonationCampaigns = () => {
               >
                 Edit
               </Button>
-
               <Button
                 size="sm"
                 variant="outline"
@@ -128,7 +126,16 @@ const MyDonationCampaigns = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+        pageIndex: 0,
+      },
+    },
   });
+
+  if (isLoading) return <p className="text-center mt-4">Loading your campaigns...</p>;
+  if (error) return <p className="text-center text-red-500">Failed to load campaigns.</p>;
 
   return (
     <div className="p-6">
@@ -167,24 +174,51 @@ const MyDonationCampaigns = () => {
         </table>
       </div>
 
-      {selectedCampaign && (
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Donators for {selectedCampaign.petName}</DialogTitle>
-              <DialogDescription>
-                Here's a list of users who have donated to this campaign.
-              </DialogDescription>
-            </DialogHeader>
+      {/* Pagination Controls */}
+      {table.getPageCount() > 1 && (
+        <div className="flex justify-center items-center gap-3 mt-6">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          </span>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      )}
 
-            <div className="space-y-2 max-h-60 overflow-y-auto">
+      {/* Donators Dialog */}
+      {selectedCampaign && (
+        <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <AlertDialogContent className="sm:max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Donators for {selectedCampaign.petName}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Here's a list of users who have donated to this campaign.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-2 max-h-60 overflow-y-auto mt-2">
               {donators.length === 0 ? (
-                <p className="text-gray-500 text-sm">No donations yet.</p>
+                <p className="text-sm text-gray-500">No donations yet.</p>
               ) : (
                 donators.map((donator, idx) => (
                   <div
                     key={idx}
-                    className="flex justify-between py-1 text-sm border-b"
+                    className="flex justify-between text-sm border-b py-1"
                   >
                     <span>{donator.donorName}</span>
                     <span>৳{donator.amount}</span>
@@ -192,14 +226,9 @@ const MyDonationCampaigns = () => {
                 ))
               )}
             </div>
-
-            <DialogClose asChild>
-              <Button variant="outline" className="mt-4">
-                Close
-              </Button>
-            </DialogClose>
-          </DialogContent>
-        </Dialog>
+            <AlertDialogCancel className="mt-4">Close</AlertDialogCancel>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
     </div>
   );

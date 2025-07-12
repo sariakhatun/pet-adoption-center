@@ -33,7 +33,8 @@ const MyPets = () => {
   const { data: pets = [], refetch } = useQuery({
     queryKey: ["my-pets", user?.email],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/pets?email=${user?.email}`);
+      const res = await axiosSecure.get(`/pets?email=${user?.email}&all=true`);
+
       return res.data;
     },
   });
@@ -106,7 +107,8 @@ const MyPets = () => {
               <Button
                 size="sm"
                 variant="outline"
-                className="border-[#34B7A7] text-[#34B7A7] hover:bg-[#34B7A7] hover:text-white transition-colors"
+                  className="border-[#34B7A7] text-[#34B7A7] hover:bg-[#34B7A7] hover:text-white transition-colors"
+
                 onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}
               >
                 <FaEdit />
@@ -148,25 +150,26 @@ const MyPets = () => {
               </AlertDialog>
 
               {/* Mark Adopted */}
-              {pet.adopted ? (
-                <Button
-                  size="sm"
-                  disabled
-                  className="bg-green-600 text-white cursor-not-allowed"
-                >
-                  <FaCheck className="mr-1" />
-                  Adopted
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  className="border border-green-600 text-green-600 bg-white hover:bg-green-600 hover:text-white transition-colors"
-                  onClick={() => handleMarkAdopted(pet._id)}
-                >
-                  <FaCheck className="mr-1" />
-                  Mark Adopted
-                </Button>
-              )}
+             {pet.adopted ? (
+  <Button
+    size="sm"
+    disabled
+    className="bg-green-600 text-white cursor-not-allowed"
+  >
+    <FaCheck className="mr-1" />
+    Adopted
+  </Button>
+) : (
+  <Button
+    size="sm"
+    className="border border-green-600 text-green-600 bg-white hover:bg-green-600 hover:text-white transition-colors"
+    onClick={() => handleMarkAdopted(pet._id)}
+  >
+    <FaCheck className="mr-1" />
+    Mark Adopted
+  </Button>
+)}
+
             </div>
           );
         },

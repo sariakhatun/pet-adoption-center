@@ -10,31 +10,30 @@ const MyDonation = () => {
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
 
-  const { data: donations = [], isLoading, error } = useQuery(
-    ["my-donations", user?.email],
-    async () => {
+  // Fetch user's donations
+  const { data: donations = [], isLoading, error } = useQuery({
+    queryKey: ["my-donations", user?.email],
+    queryFn: async () => {
       const res = await axiosSecure.get(`/my-donations?donorEmail=${user?.email}`);
       return res.data;
     },
-    {
-      enabled: !!user?.email,
-    }
-  );
+    enabled: !!user?.email, // only fetch if user email is available
+  });
 
-  const refundMutation = useMutation(
-    async (donationId) => {
+  // Mutation to request refund (delete donation)
+  const refundMutation = useMutation({
+    mutationFn: async (donationId) => {
       return axiosSecure.delete(`/donations/${donationId}`);
     },
-    {
-      onSuccess: () => {
-        Swal.fire("Refund Requested", "Your donation has been refunded.", "success");
-        queryClient.invalidateQueries(["my-donations", user?.email]);
-      },
-      onError: (err) => {
-        Swal.fire("Error", err?.response?.data?.error || "Refund failed", "error");
-      },
-    }
-  );
+    onSuccess: () => {
+      Swal.fire("Refund Requested", "Your donation has been refunded.", "success");
+      // Invalidate and refetch donations after successful refund
+      queryClient.invalidateQueries(["my-donations", user?.email]);
+    },
+    onError: (err) => {
+      Swal.fire("Error", err?.response?.data?.error || "Refund failed", "error");
+    },
+  });
 
   if (isLoading) return <p className="text-center">Loading your donations...</p>;
   if (error) return <p className="text-center text-red-600">Failed to load donations</p>;
