@@ -79,7 +79,7 @@ const Navbar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <img
-                  src={user?.photoURL || "https://i.ibb.co/Sv6Yk5G/avatar.png"}
+                  src={user?.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
                   alt="User"
                   className="w-10 h-10 rounded-full border-2 border-[#34B7A7] cursor-pointer"
                 />

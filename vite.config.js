@@ -19,5 +19,6 @@ export default defineConfig({
     proxy: {
       "/pets": "http://localhost:5000",
     },
+     historyApiFallback: true, 
   },
 });

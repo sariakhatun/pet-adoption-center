@@ -22,30 +22,40 @@ import {
 import { FaEdit, FaTrash, FaCheck } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+const PAGE_SIZE = 10;
+
 const MyPets = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
+  const [pageIndex, setPageIndex] = useState(0);
   const [selectedPet, setSelectedPet] = useState(null);
   const [showDialog, setShowDialog] = useState(false);
 
-  const { data: pets = [], refetch } = useQuery({
-    queryKey: ["my-pets", user?.email],
-    queryFn: async () => {
-      const res = await axiosSecure.get(`/pets?email=${user?.email}&all=true`);
+  // Fetch pets for current page
+ const { data = { total: 0, pets: [] }, refetch, isLoading, isError } = useQuery({
+  queryKey: ["my-pets", user?.email, pageIndex],
+  queryFn: async () => {
+    const res = await axiosSecure.get(
+      `/my-pets?email=${user?.email}&page=${pageIndex}&limit=${PAGE_SIZE}`
+    );
+    return res.data;
+  },
+  enabled: !!user?.email,
+});
 
-      return res.data;
-    },
-  });
+
 
   // Delete handler
   const handleDelete = async () => {
     if (selectedPet) {
       try {
         await axiosSecure.delete(`/pets/${selectedPet._id}`);
-        refetch();
         setShowDialog(false);
+        setSelectedPet(null);
+        // Refetch pets after deletion
+        refetch();
       } catch (error) {
         console.error("Delete failed:", error);
       }
@@ -62,11 +72,12 @@ const MyPets = () => {
     }
   };
 
+  // Table columns
   const columns = useMemo(
     () => [
       {
         header: "S/N",
-        cell: ({ row }) => row.index + 1,
+        cell: ({ row }) => pageIndex * PAGE_SIZE + row.index + 1,
       },
       {
         header: "Pet Name",
@@ -91,7 +102,7 @@ const MyPets = () => {
         header: "Status",
         accessorKey: "adopted",
         cell: ({ getValue }) =>
-          getValue() ? (
+          getValue ? (
             <span className="text-green-600 font-semibold">Adopted</span>
           ) : (
             <span className="text-red-500 font-semibold">Not Adopted</span>
@@ -103,18 +114,15 @@ const MyPets = () => {
           const pet = row.original;
           return (
             <div className="flex gap-2">
-              {/* Update Button - navigate to update page */}
               <Button
                 size="sm"
                 variant="outline"
-                  className="border-[#34B7A7] text-[#34B7A7] hover:bg-[#34B7A7] hover:text-white transition-colors"
-
+                className="border-[#34B7A7] text-[#34B7A7] hover:bg-[#34B7A7] hover:text-white transition-colors"
                 onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}
               >
                 <FaEdit />
               </Button>
 
-              {/* Delete with modal */}
               <AlertDialog open={showDialog && selectedPet?._id === pet._id}>
                 <AlertDialogTrigger asChild>
                   <Button
@@ -149,47 +157,51 @@ const MyPets = () => {
                 </AlertDialogContent>
               </AlertDialog>
 
-              {/* Mark Adopted */}
-             {pet.adopted ? (
-  <Button
-    size="sm"
-    disabled
-    className="bg-green-600 text-white cursor-not-allowed"
-  >
-    <FaCheck className="mr-1" />
-    Adopted
-  </Button>
-) : (
-  <Button
-    size="sm"
-    className="border border-green-600 text-green-600 bg-white hover:bg-green-600 hover:text-white transition-colors"
-    onClick={() => handleMarkAdopted(pet._id)}
-  >
-    <FaCheck className="mr-1" />
-    Mark Adopted
-  </Button>
-)}
-
+              {pet.adopted ? (
+                <Button
+                  size="sm"
+                  disabled
+                  className="bg-green-600 text-white cursor-not-allowed"
+                >
+                  <FaCheck className="mr-1" />
+                  Adopted
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  className="border border-green-600 text-green-600 bg-white hover:bg-green-600 hover:text-white transition-colors"
+                  onClick={() => handleMarkAdopted(pet._id)}
+                >
+                  <FaCheck className="mr-1" />
+                  Mark Adopted
+                </Button>
+              )}
             </div>
           );
         },
       },
     ],
-    [selectedPet, showDialog, navigate]
+    [pageIndex, selectedPet, showDialog, navigate]
   );
 
+  // Setup React Table
   const table = useReactTable({
-    data: pets,
+    data: data?.pets || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    pageCount: Math.ceil((data?.total || 0) / PAGE_SIZE),
   });
+
+  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (isError) return <p className="text-center mt-10 text-red-600">Failed to load pets</p>;
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4 text-[#34B7A7]">
-        My Pets ({pets.length})
+        My Pets ({data?.total || 0})
       </h2>
 
       <div className="overflow-x-auto">
@@ -203,9 +215,7 @@ const MyPets = () => {
                     className="px-4 py-2 text-left cursor-pointer"
                     onClick={header.column.getToggleSortingHandler()}
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : header.column.columnDef.header}
+                    {header.isPlaceholder ? null : header.column.columnDef.header}
                     {{
                       asc: " 🔼",
                       desc: " 🔽",
@@ -231,26 +241,31 @@ const MyPets = () => {
         </table>
       </div>
 
-      {/* Pagination */}
+      {/* Pagination Controls */}
       {table.getPageCount() > 1 && (
         <div className="flex justify-center items-center gap-3 mt-6">
           <Button
             size="sm"
             variant="outline"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => {
+              setPageIndex((old) => Math.max(old - 1, 0));
+            }}
+            disabled={pageIndex === 0}
           >
             Previous
           </Button>
           <span>
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            Page {pageIndex + 1} of {table.getPageCount()}
           </span>
           <Button
             size="sm"
             variant="outline"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => {
+              setPageIndex((old) =>
+                Math.min(old + 1, table.getPageCount() - 1)
+              );
+            }}
+            disabled={pageIndex >= table.getPageCount() - 1}
           >
             Next
           </Button>

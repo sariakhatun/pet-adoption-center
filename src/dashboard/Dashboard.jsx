@@ -13,6 +13,8 @@ import {
   FaRegListAlt,
   FaHandsHelping,
   FaHome,
+  FaUserShield,
+  FaPaw,
 } from "react-icons/fa";
 const Dashboard = () => {
   return (
@@ -20,7 +22,6 @@ const Dashboard = () => {
       {/* Sidebar for desktop */}
       <aside className="hidden lg:flex flex-col w-72 bg-[#F3F4F6] p-6 shadow-lg">
         <nav className="flex flex-col space-y-2">
-        
           <NavLink
             to="/dashboard"
             className={({ isActive }) =>
@@ -116,6 +117,47 @@ const Dashboard = () => {
           >
             <FaHandsHelping />
             My Donations
+          </NavLink>
+
+          {/* admin route */}
+          <NavLink
+            to="/dashboard/make-admin"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`
+            }
+          >
+            <FaUserShield />
+            Make Admin
+          </NavLink>
+          <NavLink
+            to="/dashboard/all-pets"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`
+            }
+          >
+            <FaPaw />
+            All Pets
+          </NavLink>
+          <NavLink
+            to="/dashboard/all-donations"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`
+            }
+          >
+            <FaDonate />
+            All Donations
           </NavLink>
         </nav>
       </aside>

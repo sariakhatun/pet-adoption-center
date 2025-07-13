@@ -2,6 +2,9 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+.active{
+  color: #34B7A7;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

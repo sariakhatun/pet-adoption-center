@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import GoogleLogin from './GoogleLogin';
 import GithubLogin from './GithubLogin';
 import axios from 'axios';
+import useAxios from '@/hooks/useAxios';
 const Register = () => {
      const {
     register,
@@ -18,6 +19,7 @@ const Register = () => {
     formState: { errors },
   } = useForm();
    const [imagePreview, setImagePreview] = useState(null);
+   let axiosInstance = useAxios()
    let {createUser,updateUserProfile}=useAuth()
   let navigate = useNavigate()
    const onSubmit = (data) => {
@@ -25,10 +27,22 @@ const Register = () => {
     // TODO: Upload image to cloud and handle registration
     console.log(createUser)
     createUser(data.email,data.password)
-    .then(res=>{
+    .then(async(res)=>{
       console.log(res.user)
 
       //update userinfo in the database
+      let userInfo = {
+           email:data.email,
+           name: data.name,
+           photoURL:imagePreview,
+           role: 'user',//default role
+          createdAt : new Date().toISOString(),
+          lastLoginAt: new Date().toISOString()
+      }
+
+      let userRes = await axiosInstance.post('/users',userInfo);
+      console.log('user response',userRes.data)
+
 
 
       //update user profile in firebase

@@ -49,12 +49,12 @@ const CreateDonationCampaign = () => {
     }
 
     const campaignData = {
-      petName: data.petName,                    // Added petName
+      petName: data.petName,      
       petImage: imageUrl,
       maxDonationAmount: parseFloat(data.maxDonationAmount),
-      donatedAmount: 0,                         // default to 0 on creation
-      donators: [],                            // default empty array on creation
-      paused: false,                           // default not paused
+      donatedAmount:0,                         
+      donators: [],                          
+      paused: false,                         
       donationDeadline: data.donationDeadline,
       shortDescription: data.shortDescription,
       longDescription: data.longDescription,

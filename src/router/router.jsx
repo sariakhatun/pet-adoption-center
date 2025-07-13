@@ -21,6 +21,10 @@ import UpdatePet from "@/dashboard/UserDashboard/UpdatePet";
 import EditDonationCampaign from "@/dashboard/UserDashboard/EditDonationCampaign";
 import PetDetails from "@/pages/Authentication/PetDetails";
 import DonationDetails from "@/pages/Authentication/DonationDetails";
+import PetsByCategory from "@/pages/Home/Home/PetsByCategory";
+import MakeAdmin from "@/dashboard/UserDashboard/MakeAdmin";
+import AllPets from "@/dashboard/UserDashboard/AllPets";
+import AllDonations from "@/dashboard/UserDashboard/AllDonations";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +35,10 @@ export const router = createBrowserRouter([
             index:true,
             path:'/',
             Component:Home,
+        },
+        {
+          path:'/pets/category/:category',
+          element:<PetsByCategory></PetsByCategory>
         },
         {
             path:'/petListing',
@@ -112,6 +120,25 @@ export const router = createBrowserRouter([
                 path:'edit-donation/:id',
                 element:<PrivateRoute>
                   <EditDonationCampaign></EditDonationCampaign>
+                </PrivateRoute>
+              },
+              // admin route
+              {
+                path:'make-admin',
+                element:<PrivateRoute>
+                  <MakeAdmin></MakeAdmin>
+                </PrivateRoute>
+              },
+               {
+                path:'all-pets',
+                element:<PrivateRoute>
+                  <AllPets></AllPets>
+                </PrivateRoute>
+              },
+               {
+                path:'all-donations',
+                element:<PrivateRoute>
+                  <AllDonations></AllDonations>
                 </PrivateRoute>
               },
             ]
