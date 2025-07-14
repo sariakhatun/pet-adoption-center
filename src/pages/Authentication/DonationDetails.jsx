@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import Swal from "sweetalert2";
 
 const DonationDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
   const stripe = useStripe();
@@ -47,22 +48,24 @@ const DonationDetails = () => {
       const res = await axiosSecure.get(`/donation-details/${id}`);
       return res.data;
     },
+    enabled: !!id,
   });
 
   const { data: recommended = [] } = useQuery({
-    queryKey: ["recommendedCampaigns"],
+    queryKey: ["recommendedCampaigns", id],
     queryFn: async () => {
-      const res = await axiosSecure.get(
-        `/donation-campaigns?limit=3&exclude=${id}`
-      );
-      return res.data;
+      const res = await axiosSecure.get(`/donation-campaigns?limit=3&exclude=${id}`);
+      const campaigns = res.data?.campaigns;
+      return Array.isArray(campaigns) ? campaigns : [];
     },
+    enabled: !!id,
   });
 
   const onAmountSubmit = (formData) => {
+    if (!campaign) return;
+
     const amount = parseFloat(formData.amount);
-    const remaining =
-      campaign.maxDonationAmount - (campaign.donatedAmount || 0);
+    const remaining = campaign.maxDonationAmount - (campaign.donatedAmount || 0);
 
     if (isNaN(amount) || amount <= 0) {
       Swal.fire("Error", "Please enter a valid donation amount", "error");
@@ -72,7 +75,7 @@ const DonationDetails = () => {
     if (amount > remaining) {
       Swal.fire(
         "Error",
-        `Amount exceeds the remaining goal (৳${remaining})`,
+        `Amount exceeds the remaining goal (৳${remaining.toFixed(2)})`,
         "error"
       );
       return;
@@ -104,15 +107,15 @@ const DonationDetails = () => {
     }
 
     try {
-      const { paymentMethod, error: paymentMethodError } =
-        await stripe.createPaymentMethod({
-          type: "card",
-          card,
-          billing_details: {
-            name: donorInfo.donorName,
-            email: donorInfo.donorEmail,
-          },
-        });
+      // Create payment method
+      const { paymentMethod, error: paymentMethodError } = await stripe.createPaymentMethod({
+        type: "card",
+        card,
+        billing_details: {
+          name: donorInfo.donorName,
+          email: donorInfo.donorEmail,
+        },
+      });
 
       if (paymentMethodError) {
         setPaymentError(paymentMethodError.message);
@@ -120,20 +123,24 @@ const DonationDetails = () => {
         return;
       }
 
-      const amountInCents = Math.round(donorInfo.amount * 100);
-      const { data } = await axiosSecure.post("/create-payment-intent", {
-        amountInCents,
+      setCardDetails({
+        brand: paymentMethod.card.brand,
+        last4: paymentMethod.card.last4,
       });
+
+      // Request payment intent from backend
+      const amountInCents = Math.round(donorInfo.amount * 100);
+      const { data } = await axiosSecure.post("/create-payment-intent", { amountInCents });
 
       const clientSecret = data.clientSecret;
       if (!clientSecret) {
         throw new Error("Failed to get client secret from backend");
       }
 
-      const { paymentIntent, error: confirmError } =
-        await stripe.confirmCardPayment(clientSecret, {
-          payment_method: paymentMethod.id,
-        });
+      // Confirm card payment
+      const { paymentIntent, error: confirmError } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: paymentMethod.id,
+      });
 
       if (confirmError) {
         setPaymentError(confirmError.message);
@@ -197,6 +204,7 @@ const DonationDetails = () => {
   };
 
   if (isLoading) return <p className="text-center">Loading...</p>;
+
   if (!campaign)
     return (
       <p className="text-center text-red-500 font-medium">
@@ -211,39 +219,35 @@ const DonationDetails = () => {
         alt={campaign.petName}
         className="w-full max-h-[400px] object-cover rounded-lg shadow mb-6"
       />
-      <h2 className="text-3xl font-bold text-[#34B7A7] mb-2">
-        {campaign.petName}
-      </h2>
+      <h2 className="text-3xl font-bold text-[#34B7A7] mb-2">{campaign.petName}</h2>
       <p>
-        <strong>Max Donation:</strong> ৳{campaign.maxDonationAmount}
+        <strong>Max Donation:</strong> ৳{campaign.maxDonationAmount.toFixed(2)}
       </p>
       <p>
-        <strong>Donated:</strong> ৳{campaign.donatedAmount || 0}
+        <strong>Donated:</strong> ৳{(campaign.donatedAmount || 0).toFixed(2)}
       </p>
       <p>
-        <strong>Deadline:</strong>{" "}
-        {new Date(campaign.donationDeadline).toLocaleDateString()}
+        <strong>Deadline:</strong> {new Date(campaign.donationDeadline).toLocaleDateString()}
       </p>
+
       {campaign.paused && (
         <p className="text-red-600 font-semibold my-4">
-          ⚠️ This campaign is currently paused. Donations are not accepted at
-          this time.
+          ⚠️ This campaign is currently paused. Donations are not accepted at this time.
         </p>
       )}
-      <p className="text-gray-700 mt-4 whitespace-pre-line">
-        {campaign.longDescription}
-      </p>
+
+      <p className="text-gray-700 mt-4 whitespace-pre-line">{campaign.longDescription}</p>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button
             className="mt-6 bg-[#34B7A7] text-white hover:bg-[#2fa99b]"
-            onClick={() => setIsDialogOpen(true)}
             disabled={campaign.paused}
           >
             Donate Now
           </Button>
         </DialogTrigger>
+
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Donate to {campaign.petName}</DialogTitle>
@@ -253,19 +257,11 @@ const DonationDetails = () => {
             <form onSubmit={handleSubmit(onAmountSubmit)} className="space-y-4">
               <div>
                 <Label>Your Name</Label>
-                <Input
-                  defaultValue={user?.displayName}
-                  readOnly
-                  className="bg-gray-100"
-                />
+                <Input defaultValue={user?.displayName} readOnly className="bg-gray-100" />
               </div>
               <div>
                 <Label>Email</Label>
-                <Input
-                  defaultValue={user?.email}
-                  readOnly
-                  className="bg-gray-100"
-                />
+                <Input defaultValue={user?.email} readOnly className="bg-gray-100" />
               </div>
               <div>
                 <Label>Donation Amount (৳)</Label>
@@ -276,50 +272,47 @@ const DonationDetails = () => {
                     required: "Donation amount is required",
                     min: { value: 1, message: "Must be at least ৳1" },
                     max: {
-                      value:
-                        campaign.maxDonationAmount -
-                        (campaign.donatedAmount || 0),
+                      value: campaign.maxDonationAmount - (campaign.donatedAmount || 0),
                       message: "Amount exceeds remaining goal",
                     },
                   })}
                 />
-                {errors.amount && (
-                  <p className="text-red-500 text-sm">
-                    {errors.amount.message}
-                  </p>
-                )}
+                {errors.amount && <p className="text-red-500 text-sm">{errors.amount.message}</p>}
               </div>
-              <Button className="w-full bg-[#34B7A7] text-white">
-                Continue to Payment
-              </Button>
+              <Button className="w-full bg-[#34B7A7] text-white">Continue to Payment</Button>
             </form>
           ) : (
             <form onSubmit={handlePayment} className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Name: {donorInfo.donorName}
-              </p>
-              <p className="text-sm text-gray-600">
-                Email: {donorInfo.donorEmail}
-              </p>
-              <p className="text-sm text-gray-600">
-                Amount: ৳{donorInfo.amount}
-              </p>
+              <p className="text-sm text-gray-600">Name: {donorInfo.donorName}</p>
+              <p className="text-sm text-gray-600">Email: {donorInfo.donorEmail}</p>
+              <p className="text-sm text-gray-600">Amount: ৳{donorInfo.amount.toFixed(2)}</p>
 
               <div>
                 <Label>Card Details</Label>
                 <div className="border rounded px-3 py-2 bg-white">
-                  <CardElement />
+                  <CardElement
+                    onChange={(e) => {
+                      if (e.complete) {
+                        setCardDetails({
+                          brand: e.brand,
+                          last4: e.card?.last4 || "",
+                        });
+                        setPaymentError(null);
+                      } else if (e.error) {
+                        setPaymentError(e.error.message);
+                      } else {
+                        setPaymentError(null);
+                      }
+                    }}
+                  />
                 </div>
               </div>
 
-              {paymentError && (
-                <p className="text-red-500 text-sm">{paymentError}</p>
-              )}
+              {paymentError && <p className="text-red-500 text-sm">{paymentError}</p>}
 
               {cardDetails && (
                 <p className="text-green-600 text-sm mt-2">
-                  Card: {cardDetails.brand.toUpperCase()} ending with{" "}
-                  {cardDetails.last4}
+                  Card: {cardDetails.brand?.toUpperCase()} ending with {cardDetails.last4}
                 </p>
               )}
 
@@ -336,9 +329,7 @@ const DonationDetails = () => {
       </Dialog>
 
       <div className="mt-12">
-        <h3 className="text-2xl font-semibold mb-6 text-[#34B7A7]">
-          Recommended Campaigns
-        </h3>
+        <h3 className="text-2xl font-semibold mb-6 text-[#34B7A7]">Recommended Campaigns</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {recommended.map((item) => (
             <div key={item._id} className="border rounded-lg shadow p-4">
@@ -347,20 +338,14 @@ const DonationDetails = () => {
                 alt={item.petName}
                 className="w-full h-40 object-cover rounded mb-3"
               />
-              <h4 className="text-xl font-bold text-[#34B7A7]">
-                {item.petName}
-              </h4>
-              <p className="text-sm text-gray-600 line-clamp-2">
-                {item.shortDescription}
-              </p>
+              <h4 className="text-xl font-bold text-[#34B7A7]">{item.petName}</h4>
+              <p className="text-sm text-gray-600 line-clamp-2">{item.shortDescription}</p>
               <p className="text-sm mt-2">
-                <strong>Goal:</strong> ৳{item.maxDonationAmount}
+                <strong>Goal:</strong> ৳{item.maxDonationAmount.toFixed(2)}
               </p>
               <Button
                 className="mt-2 bg-[#34B7A7] text-white hover:bg-[#2fa99b]"
-                onClick={() =>
-                  (window.location.href = `/donation-details/${item._id}`)
-                }
+                onClick={() => navigate(`/donation-details/${item._id}`)}
               >
                 View Details
               </Button>

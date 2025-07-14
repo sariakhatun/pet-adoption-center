@@ -25,6 +25,8 @@ import PetsByCategory from "@/pages/Home/Home/PetsByCategory";
 import MakeAdmin from "@/dashboard/UserDashboard/MakeAdmin";
 import AllPets from "@/dashboard/UserDashboard/AllPets";
 import AllDonations from "@/dashboard/UserDashboard/AllDonations";
+import Forbidden from "@/pages/forbidden/Forbidden";
+import AdminRoute from "./AdminRoute";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +69,10 @@ export const router = createBrowserRouter([
          {
             path:'/googleLogin',
             Component:GoogleLogin
+        },
+         {
+            path:'/forbidden',
+            Component:Forbidden
         },
          {
             path:'/dashboard',
@@ -125,21 +131,21 @@ export const router = createBrowserRouter([
               // admin route
               {
                 path:'make-admin',
-                element:<PrivateRoute>
+                element:<AdminRoute>
                   <MakeAdmin></MakeAdmin>
-                </PrivateRoute>
+                </AdminRoute>
               },
                {
                 path:'all-pets',
-                element:<PrivateRoute>
+                element:<AdminRoute>
                   <AllPets></AllPets>
-                </PrivateRoute>
+                </AdminRoute>
               },
                {
                 path:'all-donations',
-                element:<PrivateRoute>
+                element:<AdminRoute>
                   <AllDonations></AllDonations>
-                </PrivateRoute>
+                </AdminRoute>
               },
             ]
         },

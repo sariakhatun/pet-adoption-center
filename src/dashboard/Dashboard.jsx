@@ -16,7 +16,10 @@ import {
   FaUserShield,
   FaPaw,
 } from "react-icons/fa";
+import useUserRole from "@/hooks/useUserRole";
 const Dashboard = () => {
+  let { role, roleLoading } = useUserRole();
+  console.log("role from dashboard", role);
   return (
     <div className="flex min-h-screen bg-white">
       {/* Sidebar for desktop */}
@@ -120,45 +123,49 @@ const Dashboard = () => {
           </NavLink>
 
           {/* admin route */}
-          <NavLink
-            to="/dashboard/make-admin"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive
-                  ? "bg-[#34B7A7] text-white"
-                  : "text-gray-700 hover:bg-gray-200"
-              }`
-            }
-          >
-            <FaUserShield />
-            Make Admin
-          </NavLink>
-          <NavLink
-            to="/dashboard/all-pets"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive
-                  ? "bg-[#34B7A7] text-white"
-                  : "text-gray-700 hover:bg-gray-200"
-              }`
-            }
-          >
-            <FaPaw />
-            All Pets
-          </NavLink>
-          <NavLink
-            to="/dashboard/all-donations"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive
-                  ? "bg-[#34B7A7] text-white"
-                  : "text-gray-700 hover:bg-gray-200"
-              }`
-            }
-          >
-            <FaDonate />
-            All Donations
-          </NavLink>
+          { !roleLoading && role==='admin'&&
+            <>
+              <NavLink
+                to="/dashboard/make-admin"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isActive
+                      ? "bg-[#34B7A7] text-white"
+                      : "text-gray-700 hover:bg-gray-200"
+                  }`
+                }
+              >
+                <FaUserShield />
+                Make Admin
+              </NavLink>
+              <NavLink
+                to="/dashboard/all-pets"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isActive
+                      ? "bg-[#34B7A7] text-white"
+                      : "text-gray-700 hover:bg-gray-200"
+                  }`
+                }
+              >
+                <FaPaw />
+                All Pets
+              </NavLink>
+              <NavLink
+                to="/dashboard/all-donations"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isActive
+                      ? "bg-[#34B7A7] text-white"
+                      : "text-gray-700 hover:bg-gray-200"
+                  }`
+                }
+              >
+                <FaDonate />
+                All Donations
+              </NavLink>
+            </>
+          }
         </nav>
       </aside>
 

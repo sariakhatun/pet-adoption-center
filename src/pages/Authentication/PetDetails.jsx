@@ -22,7 +22,7 @@ const PetDetails = () => {
   const { user } = useAuth();
 
   // Fetch pet data
-  const { data: pet, isLoading } = useQuery({
+  const { data: pet, isLoading,isError } = useQuery({
     queryKey: ["petDetails", id],
     queryFn: async () => {
       const res = await axiosSecure.get(`/pets/${id}`);
@@ -32,8 +32,9 @@ const PetDetails = () => {
 
   const { register, handleSubmit, reset } = useForm();
 
-  if (!user) return <p>Loading user info...</p>;
+   if (!user) return <p>Loading user info...</p>;
   if (isLoading) return <p>Loading pet details...</p>;
+  if (isError || !pet) return <p className="text-red-500">Failed to load pet details.</p>;
 
   const onSubmit = async (formData) => {
     const adoptionData = {
