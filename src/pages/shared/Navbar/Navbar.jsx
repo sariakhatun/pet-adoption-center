@@ -1,20 +1,20 @@
-import React from "react"
-import { NavLink, Link } from "react-router-dom"
-import { Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import React from "react";
+import { NavLink, Link } from "react-router-dom";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-import Swal from "sweetalert2"
-import PetNectLogo from "../logo/PetNectLogo"
-import useAuth from "@/hooks/useAuth"
+import Swal from "sweetalert2";
+import PetNectLogo from "../logo/PetNectLogo";
+import useAuth from "@/hooks/useAuth";
 
 const Navbar = () => {
-  const { user, logOut } = useAuth()
+  const { user, logOut } = useAuth();
 
   const handleLogOut = () => {
     logOut()
@@ -25,12 +25,12 @@ const Navbar = () => {
           title: "Logged Out Successfully",
           showConfirmButton: false,
           timer: 1500,
-        })
+        });
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }
+        console.log(error);
+      });
+  };
 
   const navItems = (
     <>
@@ -44,7 +44,7 @@ const Navbar = () => {
         Donation Campaigns
       </NavLink>
     </>
-  )
+  );
 
   return (
     <nav className="bg-white shadow-sm w-full px-4 py-3 flex justify-between items-center">
@@ -79,7 +79,10 @@ const Navbar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <img
-                  src={user?.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+                  src={
+                    user?.photoURL ||
+                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  }
                   alt="User"
                   className="w-10 h-10 rounded-full border-2 border-[#34B7A7] cursor-pointer"
                 />
@@ -90,16 +93,23 @@ const Navbar = () => {
                     Dashboard
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  {/* Logout Button */}
+                  {/* <Button
+                    onClick={handleLogOut}
+                    className="bg-[#34B7A7] hover:bg-[#2fa296] text-xs px-4 py-2"
+                  >
+                    Logout
+                  </Button> */}
+                  <DropdownMenuItem
+                    onClick={handleLogOut}
+                    className="text-red-600"
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* Logout Button */}
-            <Button
-              onClick={handleLogOut}
-              className="bg-[#34B7A7] hover:bg-[#2fa296] text-xs px-4 py-2"
-            >
-              Logout
-            </Button>
           </>
         ) : (
           <div className="flex gap-2">
@@ -117,7 +127,7 @@ const Navbar = () => {
         )}
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

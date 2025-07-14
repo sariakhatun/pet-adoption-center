@@ -20,21 +20,34 @@ const PetDetails = () => {
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
+  console.log("Pet ID from URL:", id);
+
 
   // Fetch pet data
-  const { data: pet, isLoading,isError } = useQuery({
+  const {
+    data: pet,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["petDetails", id],
     queryFn: async () => {
       const res = await axiosSecure.get(`/pets/${id}`);
       return res.data;
     },
+
+   
   });
+
+
+
+
 
   const { register, handleSubmit, reset } = useForm();
 
-   if (!user) return <p>Loading user info...</p>;
+  if (!user) return <p>Loading user info...</p>;
   if (isLoading) return <p>Loading pet details...</p>;
-  if (isError || !pet) return <p className="text-red-500">Failed to load pet details.</p>;
+  if (isError || !pet)
+    return <p className="text-red-500">Failed to load pet details.</p>;
 
   const onSubmit = async (formData) => {
     const adoptionData = {
@@ -75,14 +88,15 @@ const PetDetails = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
       {/* Pet info */}
-      <div className="flex flex-col md:flex-row gap-8 bg-white rounded-lg shadow-md p-6 border border-gray-200">
+      <div className="flex flex-col md:flex-row gap-8 bg-white rounded-lg shadow-md p-6 border border-gray-200 items-center">
         <div className="md:w-1/2 flex justify-center items-start">
           <img
             src={pet.petImage}
             alt={pet.petName}
-            className="rounded-lg w-full max-h-[450px] object-cover border"
+            className="rounded-lg w-full lg:h-[650px] max-h-[450px] object-cover border"
           />
         </div>
+
         <div className="md:w-1/2 space-y-4">
           <h2 className="text-4xl font-bold text-[#34B7A7]">{pet.petName}</h2>
           <p className="text-gray-600 text-lg">
@@ -91,7 +105,34 @@ const PetDetails = () => {
           <p className="text-gray-600 text-lg">
             <strong>Location:</strong> {pet.petLocation}
           </p>
+          <p className="text-gray-600 text-lg">
+            <strong>Category:</strong> {pet.petCategory}
+          </p>
+          <p className="text-gray-600 text-lg">
+            <strong>Short Description:</strong> {pet.shortDescription}
+          </p>
+          <p className="text-gray-600 text-lg">
+            <strong>Status:</strong>{" "}
+            {pet.adopted ? (
+              <span className="text-red-600 font-semibold">Adopted</span>
+            ) : (
+              <span className="text-green-500 font-semibold">Available</span>
+            )}
+          </p>
+          <p className="text-gray-600 text-sm">
+            <strong>Uploaded by:</strong> {pet.userEmail}
+          </p>
+          <p className="text-gray-600 text-sm">
+            <strong>Created At:</strong>{" "}
+            {new Date(pet.createdAt).toLocaleString("en-BD", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}
+          </p>
+
           <p className="text-gray-700 mt-4 leading-relaxed whitespace-pre-wrap">
+            <strong>Long Description:</strong>
+            <br />
             {pet.longDescription}
           </p>
 
