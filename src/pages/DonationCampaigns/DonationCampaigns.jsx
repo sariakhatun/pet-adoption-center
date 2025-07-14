@@ -54,7 +54,7 @@ const DonationCampaigns = () => {
       </div>
     );
   }
-
+   console.log(error)
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-10 text-center text-red-600">

@@ -4,7 +4,7 @@ import useAuth from './useAuth';
 import { useNavigate } from 'react-router';
 
 let axiosSecure = axios.create({
-    baseURL:`http://localhost:5000`
+    baseURL:`https://b11a12-server-side-sariakhatun.vercel.app`
 })
 
 const useAxiosSecure = () => {
@@ -12,8 +12,10 @@ const useAxiosSecure = () => {
     let navigate = useNavigate();
     
     axiosSecure.interceptors.request.use(async(config)=>{
-        const token = await user.getIdToken(); 
-        config.headers.Authorization = `Bearer ${token}`
+        const token = await user?.getIdToken?.(); 
+       if(token){
+         config.headers.Authorization = `Bearer ${token}`
+       }
         return config;
     },error=>{
         return Promise.reject(error);

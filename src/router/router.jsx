@@ -39,8 +39,9 @@ export const router = createBrowserRouter([
             Component:Home,
         },
         {
-          path:'/pets/category/:category',
-          element:<PetsByCategory></PetsByCategory>
+          path:'/category/:category',
+         // element:<Home></Home>
+         Component:PetsByCategory
         },
         {
             path:'/petListing',

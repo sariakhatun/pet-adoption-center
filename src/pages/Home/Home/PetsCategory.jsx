@@ -16,7 +16,7 @@ const PetsCategory = () => {
   const navigate = useNavigate();
 
   const handleCategoryClick = (category) => {
-    navigate(`/pets/category/${category}`);
+    navigate(`/category/${category}`);
   };
 
   return (

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 const PetsByCategory = () => {
   const { category } = useParams();
   const axiosSecure = useAxiosSecure();
-
+console.log('hello')
   const {
     data: pets = [],
     isLoading,

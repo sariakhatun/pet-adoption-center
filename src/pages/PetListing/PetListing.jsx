@@ -73,6 +73,7 @@ const PetListing = () => {
             <SelectItem value="cat">Cat</SelectItem>
             <SelectItem value="bird">Bird</SelectItem>
             <SelectItem value="rabbit">Rabbit</SelectItem>
+            <SelectItem value="others">Others</SelectItem>
           </SelectContent>
         </Select>
       </div>
