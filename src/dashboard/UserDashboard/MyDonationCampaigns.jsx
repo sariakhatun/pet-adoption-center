@@ -64,9 +64,9 @@ const MyDonationCampaigns = () => {
           const max = row.original.maxDonationAmount || 1;
           const percentage = Math.min((donated / max) * 100, 100);
           return (
-            <div className="w-full bg-gray-200 rounded-full h-4">
+            <div className="w-full bg-gray-200 rounded-full h-3">
               <div
-                className="bg-green-500 h-4 rounded-full"
+                className="bg-green-500 h-3 rounded-full"
                 style={{ width: `${percentage}%` }}
               />
             </div>
@@ -78,7 +78,7 @@ const MyDonationCampaigns = () => {
         cell: ({ row }) => {
           const campaign = row.original;
           return (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant={campaign.paused ? "secondary" : "destructive"}
                 size="sm"
@@ -138,13 +138,14 @@ const MyDonationCampaigns = () => {
   if (error) return <p className="text-center text-red-500">Failed to load campaigns.</p>;
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4 text-[#34B7A7]">
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-6 text-[#34B7A7] text-center md:text-left">
         My Donation Campaigns ({campaigns.length})
       </h2>
 
-      <div className="overflow-x-auto">
-        <table className="w-full table-auto border rounded">
+      {/* Table view for md and above */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full table-auto border rounded-md">
           <thead className="bg-gray-100">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -174,7 +175,71 @@ const MyDonationCampaigns = () => {
         </table>
       </div>
 
-      {/* Pagination Controls */}
+      {/* Card view for mobile */}
+      <div className="md:hidden space-y-4">
+        {campaigns.map((campaign) => {
+          const donated = campaign.donatedAmount || 0;
+          const max = campaign.maxDonationAmount || 1;
+          const percentage = Math.min((donated / max) * 100, 100);
+
+          return (
+            <div
+              key={campaign._id}
+              className="border rounded-lg p-4 shadow-sm space-y-2"
+            >
+              <div>
+                <p className="font-bold text-lg">{campaign.petName}</p>
+                <p className="text-sm text-gray-600">
+                  Max Donation: ৳{campaign.maxDonationAmount}
+                </p>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-green-500 h-3 rounded-full"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant={campaign.paused ? "secondary" : "destructive"}
+                  onClick={() => handlePauseToggle(campaign._id, campaign.paused)}
+                >
+                  {campaign.paused ? "Resume" : "Pause"}
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-blue-500 text-white hover:bg-blue-600"
+                  onClick={() => navigate(`/dashboard/edit-donation/${campaign._id}`)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-[#34B7A7] text-white"
+                  onClick={async () => {
+                    setSelectedCampaign(campaign);
+                    try {
+                      const res = await axiosSecure.get(
+                        `/donation-campaigns/${campaign._id}/donators`
+                      );
+                      setDonators(res.data || []);
+                    } catch (err) {
+                      console.error("Failed to fetch donators:", err);
+                      setDonators([]);
+                    }
+                    setDialogOpen(true);
+                  }}
+                >
+                  View Donators
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Pagination */}
       {table.getPageCount() > 1 && (
         <div className="flex justify-center items-center gap-3 mt-6">
           <Button
