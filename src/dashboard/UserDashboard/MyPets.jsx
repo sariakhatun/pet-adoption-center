@@ -37,9 +37,8 @@ const MyPets = () => {
  const { data = { total: 0, pets: [] }, refetch, isLoading, isError } = useQuery({
   queryKey: ["my-pets", user?.email, pageIndex],
   queryFn: async () => {
-    const res = await axiosSecure.get(
-      `/my-pets?email=${user?.email}&page=${pageIndex}&limit=${PAGE_SIZE}`
-    );
+       const res = await axiosSecure.get(`/my-pets?page=${pageIndex}&limit=${PAGE_SIZE}`);
+
     return res.data;
   },
   enabled: !!user?.email,

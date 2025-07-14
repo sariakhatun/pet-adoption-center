@@ -28,7 +28,7 @@ const AllDonations = () => {
   const { data = { total: 0, campaigns: [] }, refetch, isLoading, isError } = useQuery({
     queryKey: ["all-donations", pageIndex],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/donation-campaigns?page=${pageIndex}&limit=${PAGE_SIZE}`);
+      const res = await axiosSecure.get(`/all-donation-campaigns?page=${pageIndex}&limit=${PAGE_SIZE}`);
       return res.data;
     },
     keepPreviousData: true,

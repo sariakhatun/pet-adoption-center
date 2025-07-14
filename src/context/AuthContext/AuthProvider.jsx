@@ -17,11 +17,11 @@ const AuthProvider = ({ children }) => {
   let [user, setUser] = useState(null);
 
   let createUser = (email, password) => {
-    setLoading(true)
+    setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
   let loginUser = (email, password) => {
-    setLoading(true)
+    setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
@@ -30,9 +30,9 @@ const AuthProvider = ({ children }) => {
     return signInWithPopup(auth, googleProvider);
   };
   let updateUserProfile = (profileInfo) => {
-    return updateProfile(auth.currentUser, profileInfo).then(()=>{
-        setUser({...auth.currentUser})
-    })
+    return updateProfile(auth.currentUser, profileInfo).then(() => {
+      setUser({ ...auth.currentUser });
+    });
   };
 
   let logOut = () => {
@@ -41,14 +41,16 @@ const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    let unSubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      console.log(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser); // ✅ just set the user
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
-    return () => {
-      unSubscribe();
-    };
+
+    return () => unsubscribe();
   }, []);
 
   let authInfo = {
