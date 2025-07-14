@@ -29,7 +29,6 @@ const AllPets = () => {
   const [selectedPet, setSelectedPet] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Fetch all pets
   const { data = { total: 0, pets: [] }, refetch, isLoading, isError } = useQuery({
     queryKey: ["all-pets", pageIndex],
     queryFn: async () => {
@@ -39,67 +38,59 @@ const AllPets = () => {
     keepPreviousData: true,
   });
 
-  // Delete handler
   const handleDelete = async () => {
-  if (!selectedPet) return;
+    if (!selectedPet) return;
+    const result = await Swal.fire({
+      title: `Delete ${selectedPet.petName}?`,
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
 
-  const result = await Swal.fire({
-    title: `Delete ${selectedPet.petName}?`,
-    text: "This action cannot be undone.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!",
-  });
-
-  if (result.isConfirmed) {
-    try {
-      await axiosSecure.delete(`/pets/${selectedPet._id}`);
-      setDialogOpen(false);
-      setSelectedPet(null);
-      refetch();
-      Swal.fire("Deleted!", "Pet has been deleted.", "success");
-    } catch (error) {
-      console.error("Delete failed", error);
-      Swal.fire("Error", "Failed to delete the pet.", "error");
+    if (result.isConfirmed) {
+      try {
+        await axiosSecure.delete(`/pets/${selectedPet._id}`);
+        setDialogOpen(false);
+        setSelectedPet(null);
+        refetch();
+        Swal.fire("Deleted!", "Pet has been deleted.", "success");
+      } catch (error) {
+        console.error("Delete failed", error);
+        Swal.fire("Error", "Failed to delete the pet.", "error");
+      }
     }
-  }
-};
+  };
 
-
-  // Toggle adopted status
   const toggleAdoption = async (pet) => {
-  const confirmResult = await Swal.fire({
-    title: pet.adopted ? "Mark as Not Adopted?" : "Mark as Adopted?",
-    text: `Pet: ${pet.petName}`,
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "Yes",
-    cancelButtonText: "Cancel",
-  });
+    const confirmResult = await Swal.fire({
+      title: pet.adopted ? "Mark as Not Adopted?" : "Mark as Adopted?",
+      text: `Pet: ${pet.petName}`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    });
 
-  if (confirmResult.isConfirmed) {
-    try {
-      await axiosSecure.patch(`/pets/${pet._id}`, {
-        adopted: !pet.adopted,
-      });
-      refetch();
-
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: pet.adopted ? "Marked as Not Adopted." : "Marked as Adopted.",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-    } catch (error) {
-      console.error("Adoption update failed", error);
-      Swal.fire("Error", "Failed to update pet status.", "error");
+    if (confirmResult.isConfirmed) {
+      try {
+        await axiosSecure.patch(`/pets/${pet._id}`, {
+          adopted: !pet.adopted,
+        });
+        refetch();
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: pet.adopted ? "Marked as Not Adopted." : "Marked as Adopted.",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        Swal.fire("Error", "Failed to update pet status.", "error");
+      }
     }
-  }
-};
-
+  };
 
   const columns = useMemo(() => [
     {
@@ -128,42 +119,33 @@ const AllPets = () => {
     {
       header: "Status",
       accessorKey: "adopted",
-      cell: ({ row }) => {
-        return row.original.adopted ? (
+      cell: ({ row }) =>
+        row.original.adopted ? (
           <span className="text-green-600 font-medium">Adopted</span>
         ) : (
           <span className="text-red-600 font-medium">Not Adopted</span>
-        );
-      },
+        ),
     },
     {
       header: "Actions",
       cell: ({ row }) => {
         const pet = row.original;
         return (
-          <div className="flex gap-2 items-center">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}
-            >
+          <div className="flex flex-wrap gap-2 items-center">
+            <Button size="sm" variant="outline" onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}>
               <FaEdit />
             </Button>
-
             <Dialog open={dialogOpen && selectedPet?._id === pet._id} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => setSelectedPet(pet)}
-                >
+                <Button size="sm" variant="destructive" onClick={() => setSelectedPet(pet)}>
                   <FaTrash />
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    Are you sure you want to delete <span className="text-red-600">{pet.petName}</span>?
+                    Are you sure you want to delete{" "}
+                    <span className="text-red-600">{pet.petName}</span>?
                   </DialogTitle>
                 </DialogHeader>
                 <DialogFooter>
@@ -172,7 +154,6 @@ const AllPets = () => {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-
             <Button
               size="sm"
               onClick={() => toggleAdoption(pet)}
@@ -200,10 +181,13 @@ const AllPets = () => {
   if (isError) return <p className="text-center mt-10 text-red-500">Failed to load pets</p>;
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-[#34B7A7] mb-6">All Pets ({data.total})</h2>
+    <div className="p-4 sm:p-6 lg:p-10">
+      <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#34B7A7] mb-6 text-center sm:text-left">
+        All Pets ({data.total})
+      </h2>
 
-      <div className="overflow-x-auto rounded border">
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto rounded border">
         <table className="w-full table-auto border-collapse">
           <thead className="bg-gray-100">
             {table.getHeaderGroups().map(headerGroup => (
@@ -232,9 +216,49 @@ const AllPets = () => {
         </table>
       </div>
 
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {data.pets.map((pet, index) => (
+          <div key={pet._id} className="bg-white rounded shadow p-4 space-y-2">
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-lg text-[#34B7A7]">{pet.petName}</h3>
+              <span className="text-sm">{index + 1 + pageIndex * PAGE_SIZE}</span>
+            </div>
+            <img src={pet.petImage} alt="Pet" className="w-full h-40 object-cover rounded" />
+            <p className="text-sm text-gray-600">Category: {pet.petCategory}</p>
+            <p className={`text-sm font-semibold ${pet.adopted ? "text-green-600" : "text-red-600"}`}>
+              {pet.adopted ? "Adopted" : "Not Adopted"}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}>
+                <FaEdit />
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => {
+                  setSelectedPet(pet);
+                  setDialogOpen(true);
+                }}
+              >
+                <FaTrash />
+              </Button>
+              <Button
+                size="sm"
+                className={pet.adopted ? "bg-red-600 text-white" : "bg-green-600 text-white"}
+                onClick={() => toggleAdoption(pet)}
+              >
+                <FaCheck className="mr-1" />
+                {pet.adopted ? "Mark Not Adopted" : "Mark Adopted"}
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Pagination */}
       {table.getPageCount() > 1 && (
-        <div className="flex justify-center gap-4 mt-6">
+        <div className="flex justify-center gap-4 mt-6 flex-wrap">
           <Button
             size="sm"
             variant="outline"
@@ -243,7 +267,9 @@ const AllPets = () => {
           >
             Previous
           </Button>
-          <span className="self-center">Page {pageIndex + 1} of {table.getPageCount()}</span>
+          <span className="self-center text-sm mt-1">
+            Page {pageIndex + 1} of {table.getPageCount()}
+          </span>
           <Button
             size="sm"
             variant="outline"

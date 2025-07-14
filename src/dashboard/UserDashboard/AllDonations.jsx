@@ -202,64 +202,145 @@ const AllDonations = () => {
   if (isLoading) return <p className="text-center mt-10">Loading campaigns...</p>;
   if (isError) return <p className="text-center mt-10 text-red-500">Failed to load campaigns</p>;
 
-  return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-[#34B7A7] mb-6">
-        All Donation Campaigns ({data.total})
-      </h2>
+ return (
+  <div className="p-4 sm:p-6 lg:p-10">
+    <h2 className="text-xl sm:text-2xl font-bold text-[#34B7A7] mb-6 text-center sm:text-left">
+      All Donation Campaigns ({data.total})
+    </h2>
 
-      <div className="overflow-x-auto rounded border">
-        <table className="w-full table-auto border-collapse">
-          <thead className="bg-gray-100">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="border px-4 py-2 text-left">
-                    {header.isPlaceholder ? null : header.column.columnDef.header}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-t">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="border px-4 py-2">
-                    {cell.column.columnDef.cell ? cell.column.columnDef.cell(cell) : cell.getValue()}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {table.getPageCount() > 1 && (
-        <div className="flex justify-center gap-4 mt-6">
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={pageIndex === 0}
-            onClick={() => setPageIndex((p) => Math.max(p - 1, 0))}
-          >
-            Previous
-          </Button>
-          <span className="self-center">
-            Page {pageIndex + 1} of {table.getPageCount()}
-          </span>
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={pageIndex >= table.getPageCount() - 1}
-            onClick={() => setPageIndex((p) => Math.min(p + 1, table.getPageCount() - 1))}
-          >
-            Next
-          </Button>
-        </div>
-      )}
+    {/* Table view for tablet and desktop */}
+    <div className="hidden md:block overflow-x-auto rounded border">
+      <table className="w-full table-auto border-collapse">
+        <thead className="bg-gray-100">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} className="border px-4 py-2 text-left">
+                  {header.isPlaceholder ? null : header.column.columnDef.header}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="border-t">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="border px-4 py-2">
+                  {cell.column.columnDef.cell ? cell.column.columnDef.cell(cell) : cell.getValue()}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
-  );
+
+    {/* Mobile view (card style) */}
+    <div className="md:hidden space-y-4">
+      {data.campaigns.map((campaign, index) => (
+        <div key={campaign._id} className="bg-white rounded border shadow p-4 space-y-2">
+          <div className="flex justify-between">
+            <h3 className="font-semibold text-[#34B7A7]">{campaign.petName}</h3>
+            <span className="text-gray-500 text-sm">#{index + 1 + pageIndex * PAGE_SIZE}</span>
+          </div>
+          <p>
+            Max Donation:{" "}
+            <span className="font-medium">${campaign.maxDonationAmount}</span>
+          </p>
+          <p className={campaign.paused ? "text-red-600" : "text-green-600"}>
+            {campaign.paused ? "Paused" : "Active"}
+          </p>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {/* Edit Button */}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate(`/dashboard/edit-donation/${campaign._id}`)}
+            >
+              <FaEdit />
+            </Button>
+
+            {/* Delete Button */}
+            <Dialog open={dialogOpen && selectedCampaign?._id === campaign._id} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setSelectedCampaign(campaign)}
+                >
+                  <FaTrash />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    Are you sure you want to delete{" "}
+                    <span className="text-red-600">{campaign.petName}</span>?
+                  </DialogTitle>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" onClick={handleDelete}>
+                    Delete
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Pause/Unpause Button */}
+            <Button
+              size="sm"
+              variant={campaign.paused ? "secondary" : "default"}
+              className={campaign.paused ? "bg-yellow-600 text-white" : ""}
+              onClick={() => togglePause(campaign)}
+            >
+              {campaign.paused ? (
+                <>
+                  <FaPlay className="mr-1" />
+                  Unpause
+                </>
+              ) : (
+                <>
+                  <FaPause className="mr-1" />
+                  Pause
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Pagination */}
+    {table.getPageCount() > 1 && (
+      <div className="flex flex-wrap justify-center gap-4 mt-6">
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={pageIndex === 0}
+          onClick={() => setPageIndex((p) => Math.max(p - 1, 0))}
+        >
+          Previous
+        </Button>
+        <span className="self-center text-sm mt-1">
+          Page {pageIndex + 1} of {table.getPageCount()}
+        </span>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={pageIndex >= table.getPageCount() - 1}
+          onClick={() => setPageIndex((p) => Math.min(p + 1, table.getPageCount() - 1))}
+        >
+          Next
+        </Button>
+      </div>
+    )}
+  </div>
+);
+
 };
 
 export default AllDonations;
