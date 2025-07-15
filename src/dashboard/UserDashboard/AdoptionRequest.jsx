@@ -74,7 +74,7 @@ const AdoptionRequest = () => {
                 (header) => (
                   <th
                     key={header}
-                    className="text-left px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap"
+                    className="text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap"
                   >
                     {header}
                   </th>
@@ -88,7 +88,7 @@ const AdoptionRequest = () => {
                 key={req._id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
               >
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-5 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
                     <img
                       src={req.petImage}
@@ -98,15 +98,15 @@ const AdoptionRequest = () => {
                     <span className="text-base font-medium text-gray-900 dark:text-gray-100">{req.petName}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-base text-center text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-4 whitespace-nowrap text-base text-center text-gray-900 dark:text-gray-100">
                   {req.adopterName}
                 </td>
-                <td className="px-6 py-4 max-w-xs break-words text-sm text-gray-700 dark:text-gray-300">
+                <td className="px-3 py-4 max-w-xs break-words text-sm text-gray-700 dark:text-gray-300">
                   {req.adopterEmail}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{req.phone}</td>
-                <td className="px-6 py-4 max-w-xs truncate text-sm text-gray-700 dark:text-gray-300">{req.address}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{req.phone}</td>
+                <td className="px-3 py-4 max-w-xs truncate text-sm text-gray-700 dark:text-gray-300">{req.address}</td>
+                <td className="px-3 py-4 whitespace-nowrap">
                   <span
                     className={`capitalize px-3 py-1 rounded text-sm ${
                       req.status === "accepted"
@@ -119,7 +119,7 @@ const AdoptionRequest = () => {
                     {req.status || "pending"}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 py-4 whitespace-nowrap">
                   <div className="flex gap-3">
                     <Button
                       size="sm"
