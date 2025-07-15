@@ -16,6 +16,7 @@ import { useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import Swal from "sweetalert2";
+import SingleCardSkeleton from "@/skeleton/SingleCardSkeleton";
 
 const DonationDetails = () => {
   const { id } = useParams();
@@ -203,8 +204,11 @@ const DonationDetails = () => {
     }
   };
 
-  if (isLoading) return <p className="text-center">Loading...</p>;
-
+  if (isLoading)  return (
+    <div className="flex justify-center items-center h-screen">
+      <SingleCardSkeleton />
+    </div>
+  );
   if (!campaign)
     return (
       <p className="text-center text-red-500 font-medium">

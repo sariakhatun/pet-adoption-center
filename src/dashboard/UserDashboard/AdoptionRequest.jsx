@@ -3,6 +3,7 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useAuth from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
+import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
 const AdoptionRequest = () => {
   const axiosSecure = useAxiosSecure();
@@ -49,7 +50,7 @@ const AdoptionRequest = () => {
   };
 
   if (isLoading)
-    return <p className="text-center py-10">Loading requests...</p>;
+    return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
 
   if (requests.length === 0)
     return (
@@ -59,59 +60,55 @@ const AdoptionRequest = () => {
     );
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <h2 className="text-2xl sm:text-3xl font-bold text-[#34B7A7] mb-6 text-center sm:text-left">
         Adoption Requests for Your Pets
       </h2>
 
-      {/* TABLE VIEW FOR LARGE SCREENS */}
-      <div className="hidden lg:block overflow-x-auto border border-gray-200 rounded-lg">
-        <table className="min-w-full divide-y divide-gray-200 table-auto">
+      {/* TABLE FOR LG+ */}
+      <div className="hidden lg:block border border-gray-200 rounded-lg overflow-x-auto">
+        <table className="w-full min-w-full table-auto border-collapse">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Pet
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Adopter Name
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Email
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Phone
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Address
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Status
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                Actions
-              </th>
+              {["Pet", "Adopter Name", "Email", "Phone", "Address", "Status", "Actions"].map(
+                (header) => (
+                  <th
+                    key={header}
+                    className="text-left px-6 py-3 text-sm font-semibold text-gray-700 whitespace-nowrap"
+                  >
+                    {header}
+                  </th>
+                )
+              )}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody>
             {requests.map((req) => (
-              <tr key={req._id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
+              <tr
+                key={req._id}
+                className="hover:bg-gray-50 border-b border-gray-200"
+              >
+                <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
                     <img
                       src={req.petImage}
                       alt={req.petName}
-                      className="w-10 h-10 rounded object-cover"
+                      className="w-12 h-12 rounded object-cover"
                     />
-                    <span className="text-sm font-medium">{req.petName}</span>
+                    <span className="text-base font-medium">{req.petName}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3">{req.adopterName}</td>
-                <td className="px-4 py-3 break-words max-w-xs">{req.adopterEmail}</td>
-                <td className="px-4 py-3">{req.phone}</td>
-                <td className="px-4 py-3 max-w-xs truncate">{req.address}</td>
-                <td className="px-4 py-3">
+                <td className="px-6 py-4 whitespace-nowrap text-base text-center">
+                  {req.adopterName}
+                </td>
+                <td className="px-6 py-4 max-w-xs break-words text-sm">
+                  {req.adopterEmail}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">{req.phone}</td>
+                <td className="px-6 py-4 max-w-xs truncate text-sm">{req.address}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`capitalize px-2 py-1 rounded text-sm ${
+                    className={`capitalize px-3 py-1 rounded text-sm ${
                       req.status === "accepted"
                         ? "bg-green-100 text-green-700"
                         : req.status === "rejected"
@@ -122,8 +119,8 @@ const AdoptionRequest = () => {
                     {req.status || "pending"}
                   </span>
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex gap-3">
                     <Button
                       size="sm"
                       variant="outline"
@@ -148,7 +145,7 @@ const AdoptionRequest = () => {
         </table>
       </div>
 
-      {/* CARD LIST VIEW FOR MOBILE & TABLET */}
+      {/* CARD LIST FOR SMALL/MEDIUM SCREENS */}
       <div className="lg:hidden space-y-4">
         {requests.map((req) => (
           <div

@@ -14,6 +14,7 @@ import {
 import { FaTrash, FaEdit, FaPause, FaPlay } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
 const PAGE_SIZE = 10;
 
@@ -199,7 +200,7 @@ const AllDonations = () => {
     pageCount: Math.ceil(data.total / PAGE_SIZE),
   });
 
-  if (isLoading) return <p className="text-center mt-10">Loading campaigns...</p>;
+  if (isLoading) return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
   if (isError) return <p className="text-center mt-10 text-red-500">Failed to load campaigns</p>;
 
  return (

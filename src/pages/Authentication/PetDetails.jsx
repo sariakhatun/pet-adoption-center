@@ -15,6 +15,8 @@ import Swal from "sweetalert2";
 
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
+import SingleCardSkeleton from "@/skeleton/SingleCardSkeleton";
 
 const PetDetails = () => {
   const { id } = useParams();
@@ -44,8 +46,16 @@ const PetDetails = () => {
 
   const { register, handleSubmit, reset } = useForm();
 
-  if (!user) return <p>Loading user info...</p>;
-  if (isLoading) return <p>Loading pet details...</p>;
+  if (!user) return (
+    <div className="flex justify-center items-center h-screen">
+      <SingleCardSkeleton />
+    </div>
+  );
+  if (isLoading) return (
+    <div className="flex justify-center items-center h-screen">
+      <SingleCardSkeleton />
+    </div>
+  );
   if (isError || !pet)
     return <p className="text-red-500">Failed to load pet details.</p>;
 

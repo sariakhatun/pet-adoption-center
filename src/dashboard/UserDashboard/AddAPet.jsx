@@ -10,6 +10,8 @@ import axios from "axios";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useNavigate } from "react-router";
 import useAuth from "@/hooks/useAuth";
+import useUserRole from "@/hooks/useUserRole";
+import FormSkeleton from "@/skeleton/FormSkeleton";
 
 const categoryOptions = [
   { value: "dog", label: "Dog" },
@@ -22,6 +24,7 @@ const categoryOptions = [
 const AddAPet = () => {
   let axiosSecure = useAxiosSecure();
   const [imageUrl, setImageUrl] = useState(null);
+  let {roleLoading}=useUserRole();
   let {user}=useAuth()
   let navigate = useNavigate();
   const {
@@ -45,7 +48,7 @@ const AddAPet = () => {
       formData,
        { timeout: 10000 }
     );
-    console.log('import',import.meta.env.VITE_Image_Upload_Key);
+  //  console.log('import',import.meta.env.VITE_Image_Upload_Key);
 
     console.log(res.data.data.url);
     setImageUrl(res.data.data.url);
@@ -90,6 +93,9 @@ const AddAPet = () => {
 
   
   };
+
+ 
+
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow space-y-4j my-12">

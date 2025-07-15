@@ -21,6 +21,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { FaEdit, FaTrash, FaCheck } from "react-icons/fa";
+import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
 const PAGE_SIZE = 10;
 
@@ -174,7 +175,7 @@ const MyPets = () => {
     pageCount: Math.ceil((data?.total || 0) / PAGE_SIZE),
   });
 
-  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (isLoading) return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
   if (isError) return <p className="text-center mt-10 text-red-600">Failed to load pets</p>;
 
   return (

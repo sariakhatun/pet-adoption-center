@@ -17,6 +17,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
 const MyDonationCampaigns = () => {
   const { user } = useAuth();
@@ -134,7 +135,7 @@ const MyDonationCampaigns = () => {
     },
   });
 
-  if (isLoading) return <p className="text-center mt-4">Loading your campaigns...</p>;
+  if (isLoading) return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
   if (error) return <p className="text-center text-red-500">Failed to load campaigns.</p>;
 
   return (

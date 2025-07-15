@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import CardGridSkeleton from "@/skeleton/CardGridSkeleton";
 
 const PAGE_LIMIT = 6;
 
@@ -48,11 +49,7 @@ const DonationCampaigns = () => {
   }, [inView, hasNextPage, fetchNextPage]);
 
   if (isLoading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-10 text-center text-lg">
-        Loading campaigns...
-      </div>
-    );
+    return <CardGridSkeleton></CardGridSkeleton>
   }
    console.log(error)
   if (error) {

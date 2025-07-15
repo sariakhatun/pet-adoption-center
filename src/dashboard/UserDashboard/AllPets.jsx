@@ -18,6 +18,7 @@ import {
 import { FaTrash, FaEdit, FaCheck } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
 const PAGE_SIZE = 10;
 
@@ -177,7 +178,7 @@ const AllPets = () => {
     pageCount: Math.ceil(data.total / PAGE_SIZE),
   });
 
-  if (isLoading) return <p className="text-center mt-10">Loading pets...</p>;
+  if (isLoading) return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
   if (isError) return <p className="text-center mt-10 text-red-500">Failed to load pets</p>;
 
   return (

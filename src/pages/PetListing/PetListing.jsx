@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import CardGridSkeleton from "@/skeleton/CardGridSkeleton";
 
 const PetListing = () => {
   const axiosSecure = useAxiosSecure();
@@ -114,7 +115,7 @@ const PetListing = () => {
 
       {/* Infinite Scroll Observer */}
       <div ref={ref} className="h-10 mt-10">
-        {isLoading && <p className="text-center text-gray-500">Loading...</p>}
+        {isLoading && <CardGridSkeleton></CardGridSkeleton>}
       </div>
     </div>
   );

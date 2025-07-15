@@ -4,6 +4,7 @@ import useAuth from "@/hooks/useAuth";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
+import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
 const LIMIT = 5;
 
@@ -40,7 +41,7 @@ const MyDonation = () => {
     },
   });
 
-  if (isLoading) return <p className="text-center">Loading...</p>;
+  if (isLoading) return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
   if (isError) return <p className="text-center text-red-600">Error loading donations.</p>;
   if (!donations.length) return <p className="text-center">No donations found.</p>;
 

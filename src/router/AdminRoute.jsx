@@ -1,5 +1,6 @@
 import useAuth from '@/hooks/useAuth';
 import useUserRole from '@/hooks/useUserRole';
+import AdoptionRequestSkeleton from '@/skeleton/AdoptionRequestSkeleton';
 import React from 'react';
 import { Navigate } from 'react-router';
 
@@ -8,7 +9,7 @@ const AdminRoute = ({children}) => {
     let {role,roleLoading}=useUserRole();
 
     if(loading || roleLoading){
-        return '...loading'
+        return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
     }
 
       if(!user || role!=='admin'){
