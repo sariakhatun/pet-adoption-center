@@ -25,13 +25,15 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300">
       {/* Sidebar for desktop */}
-      <aside className="hidden lg:flex flex-col w-72 bg-[#F3F4F6] p-6 shadow-lg">
+      <aside className="hidden lg:flex flex-col w-72 bg-[#F3F4F6] dark:bg-gray-800 p-6 shadow-lg dark:shadow-gray-700">
         <nav className="flex flex-col space-y-2">
           <NavLink
             to="/dashboard"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
               }`
             }
           >
@@ -43,7 +45,9 @@ const Dashboard = () => {
             to="/dashboard/add-pet"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
               }`
             }
           >
@@ -55,7 +59,9 @@ const Dashboard = () => {
             to="/dashboard/my-pets"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
               }`
             }
           >
@@ -67,7 +73,9 @@ const Dashboard = () => {
             to="/dashboard/adoption-requests"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
               }`
             }
           >
@@ -79,7 +87,9 @@ const Dashboard = () => {
             to="/dashboard/create-campaign"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
               }`
             }
           >
@@ -91,7 +101,9 @@ const Dashboard = () => {
             to="/dashboard/my-campaigns"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
               }`
             }
           >
@@ -103,7 +115,9 @@ const Dashboard = () => {
             to="/dashboard/my-donations"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
               }`
             }
           >
@@ -118,7 +132,9 @@ const Dashboard = () => {
                 to="/dashboard/make-admin"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                    isActive
+                      ? "bg-[#34B7A7] text-white"
+                      : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                   }`
                 }
               >
@@ -130,7 +146,9 @@ const Dashboard = () => {
                 to="/dashboard/all-pets"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                    isActive
+                      ? "bg-[#34B7A7] text-white"
+                      : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                   }`
                 }
               >
@@ -142,7 +160,9 @@ const Dashboard = () => {
                 to="/dashboard/all-donations"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                    isActive
+                      ? "bg-[#34B7A7] text-white"
+                      : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                   }`
                 }
               >
@@ -167,11 +187,16 @@ const Dashboard = () => {
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="w-64 p-6 bg-[#F3F4F6] shadow-lg lg:hidden">
-          <h2 className="text-2xl font-bold mb-6 text-[#34B7A7]">User Dashboard</h2>
+        <SheetContent
+          side="left"
+          className="w-64 p-6 bg-[#F3F4F6] dark:bg-gray-800 shadow-lg dark:shadow-gray-700 lg:hidden"
+        >
+          <h2 className="text-2xl font-bold mb-6 text-[#34B7A7] dark:text-[#34B7A7]">
+            User Dashboard
+          </h2>
 
           {/* Debug info */}
-          <p className="text-sm mb-4 text-gray-600">
+          <p className="text-sm mb-4 text-gray-600 dark:text-gray-300">
             Role: {role || "unknown"} | Loading: {roleLoading ? "Yes" : "No"}
           </p>
 
@@ -180,7 +205,9 @@ const Dashboard = () => {
               to="/dashboard"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`
               }
             >
@@ -192,7 +219,9 @@ const Dashboard = () => {
               to="/dashboard/add-pet"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`
               }
             >
@@ -204,7 +233,9 @@ const Dashboard = () => {
               to="/dashboard/my-pets"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`
               }
             >
@@ -216,7 +247,9 @@ const Dashboard = () => {
               to="/dashboard/adoption-requests"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`
               }
             >
@@ -228,7 +261,9 @@ const Dashboard = () => {
               to="/dashboard/create-campaign"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`
               }
             >
@@ -240,7 +275,9 @@ const Dashboard = () => {
               to="/dashboard/my-campaigns"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`
               }
             >
@@ -252,7 +289,9 @@ const Dashboard = () => {
               to="/dashboard/my-donations"
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`
               }
             >
@@ -267,7 +306,9 @@ const Dashboard = () => {
                   to="/dashboard/make-admin"
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                      isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                      isActive
+                        ? "bg-[#34B7A7] text-white"
+                        : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                     }`
                   }
                 >
@@ -279,7 +320,9 @@ const Dashboard = () => {
                   to="/dashboard/all-pets"
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                      isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                      isActive
+                        ? "bg-[#34B7A7] text-white"
+                        : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                     }`
                   }
                 >
@@ -291,7 +334,9 @@ const Dashboard = () => {
                   to="/dashboard/all-donations"
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                      isActive ? "bg-[#34B7A7] text-white" : "text-gray-700 hover:bg-gray-200"
+                      isActive
+                        ? "bg-[#34B7A7] text-white"
+                        : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
                     }`
                   }
                 >

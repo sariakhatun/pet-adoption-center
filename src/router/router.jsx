@@ -1,4 +1,3 @@
-
 import Dashboard from "@/dashboard/Dashboard";
 import AddAPet from "@/dashboard/UserDashboard/AddAPet";
 import AdoptionRequest from "@/dashboard/UserDashboard/AdoptionRequest";
@@ -13,9 +12,7 @@ import Register from "@/pages/Authentication/Register";
 import DonationCampaigns from "@/pages/DonationCampaigns/DonationCampaigns";
 import Home from "@/pages/Home/Home/Home";
 import PetListing from "@/pages/PetListing/PetListing";
-import {
-  createBrowserRouter,
-} from "react-router";
+import { createBrowserRouter } from "react-router";
 import PrivateRoute from "./PrivateRoute";
 import UpdatePet from "@/dashboard/UserDashboard/UpdatePet";
 import EditDonationCampaign from "@/dashboard/UserDashboard/EditDonationCampaign";
@@ -27,130 +24,158 @@ import AllPets from "@/dashboard/UserDashboard/AllPets";
 import AllDonations from "@/dashboard/UserDashboard/AllDonations";
 import Forbidden from "@/pages/forbidden/Forbidden";
 import AdminRoute from "./AdminRoute";
+import DashboardHome from "@/dashboard/DashboardHome";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <HomeLayout></HomeLayout>,
-    children:[
-        {
-            index:true,
-            path:'/',
-            Component:Home,
-        },
-        {
-          path:'/category/:category',
-         // element:<Home></Home>
-         Component:PetsByCategory
-        },
-        {
-            path:'/petListing',
-            Component:PetListing,
-        },
-        {
-            path:'/petDetails/:id',
-            Component:PetDetails,
-        },
-        {
-            path:'/donationCampaigns',
-            Component:DonationCampaigns,
-        },
-        {
-            path:"/donation-details/:id",
-            Component:DonationDetails,
-        },
-         {
-            path:'/login',
-            Component:Login
-        },
-         {
-            path:'/register',
-            Component:Register
-        },
-         {
-            path:'/googleLogin',
-            Component:GoogleLogin
-        },
-         {
-            path:'/forbidden',
-            Component:Forbidden
-        },
-         {
-            path:'/dashboard',
-           element:<PrivateRoute>
+    children: [
+      {
+        index: true,
+        path: "/",
+        Component: Home,
+      },
+      {
+        path: "/category/:category",
+        // element:<Home></Home>
+        Component: PetsByCategory,
+      },
+      {
+        path: "/petListing",
+        Component: PetListing,
+      },
+      {
+        path: "/petDetails/:id",
+        Component: PetDetails,
+      },
+      {
+        path: "/donationCampaigns",
+        Component: DonationCampaigns,
+      },
+      {
+        path: "/donation-details/:id",
+        Component: DonationDetails,
+      },
+      {
+        path: "/login",
+        Component: Login,
+      },
+      {
+        path: "/register",
+        Component: Register,
+      },
+      {
+        path: "/googleLogin",
+        Component: GoogleLogin,
+      },
+      {
+        path: "/forbidden",
+        Component: Forbidden,
+      },
+      {
+        path: "/dashboard",
+        element: (
+          <PrivateRoute>
             <Dashboard></Dashboard>
-           </PrivateRoute>,
-            children:[
-              {
-                path:'add-pet',
-               element:<PrivateRoute>
+          </PrivateRoute>
+        ),
+        children: [
+          {
+            index: true, // This makes DashboardHome the default at /dashboard
+            element: <DashboardHome />,
+          },
+          {
+            path: "add-pet",
+            element: (
+              <PrivateRoute>
                 <AddAPet></AddAPet>
-               </PrivateRoute>
-              },
-              {
-                path:'my-pets',
-                element:<PrivateRoute>
-                  <MyPets></MyPets>
-                </PrivateRoute>
-              },
-              {
-                path:'adoption-requests',
-                element:<PrivateRoute>
-                  <AdoptionRequest></AdoptionRequest>
-                </PrivateRoute>
-              },
-              {
-                path:'create-campaign',
-               element:<PrivateRoute>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "my-pets",
+            element: (
+              <PrivateRoute>
+                <MyPets></MyPets>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "adoption-requests",
+            element: (
+              <PrivateRoute>
+                <AdoptionRequest></AdoptionRequest>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "create-campaign",
+            element: (
+              <PrivateRoute>
                 <CreateDonationCampaign></CreateDonationCampaign>
-               </PrivateRoute>
-              },
-              {
-                path:'my-campaigns',
-               element:<PrivateRoute>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "my-campaigns",
+            element: (
+              <PrivateRoute>
                 <MyDonationCampaigns></MyDonationCampaigns>
-               </PrivateRoute>
-              },
-              {
-                path:'my-donations',
-                element:<PrivateRoute>
-                  <MyDonation></MyDonation>
-                </PrivateRoute>
-              },
-              {
-                path:'update-pet/:id',
-                element:<PrivateRoute>
-                  <UpdatePet></UpdatePet>
-                </PrivateRoute>
-              },
-              {
-                path:'edit-donation/:id',
-                element:<PrivateRoute>
-                  <EditDonationCampaign></EditDonationCampaign>
-                </PrivateRoute>
-              },
-              // admin route
-              {
-                path:'make-admin',
-                element:<AdminRoute>
-                  <MakeAdmin></MakeAdmin>
-                </AdminRoute>
-              },
-               {
-                path:'all-pets',
-                element:<AdminRoute>
-                  <AllPets></AllPets>
-                </AdminRoute>
-              },
-               {
-                path:'all-donations',
-                element:<AdminRoute>
-                  <AllDonations></AllDonations>
-                </AdminRoute>
-              },
-            ]
-        },
-    ]
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "my-donations",
+            element: (
+              <PrivateRoute>
+                <MyDonation></MyDonation>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "update-pet/:id",
+            element: (
+              <PrivateRoute>
+                <UpdatePet></UpdatePet>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "edit-donation/:id",
+            element: (
+              <PrivateRoute>
+                <EditDonationCampaign></EditDonationCampaign>
+              </PrivateRoute>
+            ),
+          },
+          // admin route
+          {
+            path: "make-admin",
+            element: (
+              <AdminRoute>
+                <MakeAdmin></MakeAdmin>
+              </AdminRoute>
+            ),
+          },
+          {
+            path: "all-pets",
+            element: (
+              <AdminRoute>
+                <AllPets></AllPets>
+              </AdminRoute>
+            ),
+          },
+          {
+            path: "all-donations",
+            element: (
+              <AdminRoute>
+                <AllDonations></AllDonations>
+              </AdminRoute>
+            ),
+          },
+        ],
+      },
+    ],
   },
- 
 ]);

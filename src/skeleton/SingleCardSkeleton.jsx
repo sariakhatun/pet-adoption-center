@@ -1,35 +1,45 @@
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const SingleCardSkeleton = () => {
+const CardGridSkeleton = ({ count = 6 }) => {
   return (
-    <div className="w-full max-w-sm p-4 bg-white shadow-md rounded-lg">
-      {/* Image placeholder */}
-      <Skeleton height={200} className="rounded-md" />
-
-      {/* Title */}
-      <div className="mt-4">
-        <Skeleton height={20} width="60%" />
-      </div>
-
-      {/* Description */}
-      <div className="mt-2">
-        <Skeleton height={14} width="90%" />
-        <Skeleton height={14} width="85%" className="mt-1" />
-      </div>
-
-      {/* Tags or metadata */}
-      <div className="mt-3 flex gap-2">
-        <Skeleton height={20} width={60} />
-        <Skeleton height={20} width={50} />
-      </div>
-
-      {/* Button */}
-      <div className="mt-4">
-        <Skeleton height={36} width="40%" />
-      </div>
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+      aria-busy="true"
+      aria-label="Loading content"
+    >
+      {[...Array(count)].map((_, i) => (
+        <div
+          key={i}
+          className="p-4 bg-white dark:bg-gray-800 rounded shadow dark:shadow-md"
+          role="status"
+          aria-live="polite"
+        >
+          <Skeleton
+            height={180}
+            className="rounded"
+            baseColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#2d3748" : "#e2e8f0"}
+            highlightColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#4a5568" : "#f0f4f8"}
+          />
+          <div className="mt-4">
+            <Skeleton
+              height={20}
+              width="80%"
+              baseColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#2d3748" : "#e2e8f0"}
+              highlightColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#4a5568" : "#f0f4f8"}
+            />
+            <Skeleton
+              height={16}
+              width="60%"
+              className="mt-2"
+              baseColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#2d3748" : "#e2e8f0"}
+              highlightColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#4a5568" : "#f0f4f8"}
+            />
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
 
-export default SingleCardSkeleton;
+export default CardGridSkeleton;
