@@ -65,7 +65,7 @@ const MyDonationCampaigns = () => {
           const max = row.original.maxDonationAmount || 1;
           const percentage = Math.min((donated / max) * 100, 100);
           return (
-            <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
               <div
                 className="bg-green-500 h-3 rounded-full"
                 style={{ width: `${percentage}%` }}
@@ -119,7 +119,7 @@ const MyDonationCampaigns = () => {
         },
       },
     ],
-    [navigate]
+    [navigate, axiosSecure, refetch]
   );
 
   const table = useReactTable({
@@ -135,23 +135,31 @@ const MyDonationCampaigns = () => {
     },
   });
 
-  if (isLoading) return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
-  if (error) return <p className="text-center text-red-500">Failed to load campaigns.</p>;
+  if (isLoading) return <AdoptionRequestSkeleton />;
+  if (error)
+    return (
+      <p className="text-center text-red-500 dark:text-red-400">
+        Failed to load campaigns.
+      </p>
+    );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6 text-[#34B7A7] text-center md:text-left">
+    <div className="max-w-6xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 rounded-md">
+      <h2 className="text-2xl font-bold mb-6 text-[#34B7A7] dark:text-[#34B7A7] text-center md:text-left">
         My Donation Campaigns ({campaigns.length})
       </h2>
 
       {/* Table view for md and above */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full table-auto border rounded-md">
-          <thead className="bg-gray-100">
+      <div className="hidden md:block overflow-x-auto rounded-md border border-gray-300 dark:border-gray-700">
+        <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700 rounded-md">
+          <thead className="bg-gray-100 dark:bg-gray-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-4 py-2 text-left">
+                  <th
+                    key={header.id}
+                    className="px-4 py-2 text-left text-gray-700 dark:text-gray-300 select-none"
+                  >
                     {header.isPlaceholder
                       ? null
                       : header.column.columnDef.header}
@@ -162,9 +170,15 @@ const MyDonationCampaigns = () => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-t">
+              <tr
+                key={row.id}
+                className="border-t border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2">
+                  <td
+                    key={cell.id}
+                    className="px-4 py-2 text-gray-800 dark:text-gray-200"
+                  >
                     {cell.column.columnDef.cell
                       ? cell.column.columnDef.cell(cell)
                       : cell.getValue()}
@@ -186,15 +200,17 @@ const MyDonationCampaigns = () => {
           return (
             <div
               key={campaign._id}
-              className="border rounded-lg p-4 shadow-sm space-y-2"
+              className="border rounded-lg p-4 shadow-sm space-y-2 bg-white dark:bg-gray-800"
             >
               <div>
-                <p className="font-bold text-lg">{campaign.petName}</p>
-                <p className="text-sm text-gray-600">
+                <p className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                  {campaign.petName}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Max Donation: ৳{campaign.maxDonationAmount}
                 </p>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                 <div
                   className="bg-green-500 h-3 rounded-full"
                   style={{ width: `${percentage}%` }}
@@ -251,7 +267,7 @@ const MyDonationCampaigns = () => {
           >
             Previous
           </Button>
-          <span>
+          <span className="text-gray-800 dark:text-gray-200">
             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </span>
           <Button
@@ -268,7 +284,7 @@ const MyDonationCampaigns = () => {
       {/* Donators Dialog */}
       {selectedCampaign && (
         <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogContent className="sm:max-w-md dark:bg-gray-800 dark:text-gray-100">
             <AlertDialogHeader>
               <AlertDialogTitle>
                 Donators for {selectedCampaign.petName}
@@ -279,12 +295,14 @@ const MyDonationCampaigns = () => {
             </AlertDialogHeader>
             <div className="space-y-2 max-h-60 overflow-y-auto mt-2">
               {donators.length === 0 ? (
-                <p className="text-sm text-gray-500">No donations yet.</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No donations yet.
+                </p>
               ) : (
                 donators.map((donator, idx) => (
                   <div
                     key={idx}
-                    className="flex justify-between text-sm border-b py-1"
+                    className="flex justify-between text-sm border-b border-gray-300 dark:border-gray-700 py-1"
                   >
                     <span>{donator.donorName}</span>
                     <span>৳{donator.amount}</span>

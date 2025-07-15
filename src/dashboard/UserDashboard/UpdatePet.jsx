@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import Select from "react-select";
@@ -10,7 +9,9 @@ import axios from "axios";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { useNavigate, useParams } from "react-router";
 import useAuth from "@/hooks/useAuth";
+import TiptapEditor from "@/pages/shared/TiptapEditor";
 
+// Category options for Select
 const categoryOptions = [
   { value: "dog", label: "Dog" },
   { value: "cat", label: "Cat" },
@@ -19,12 +20,65 @@ const categoryOptions = [
   { value: "others", label: "Others" },
 ];
 
+// react-select custom styles supporting dark mode
+const customSelectStyles = (isDarkMode) => ({
+  control: (provided) => ({
+    ...provided,
+    backgroundColor: isDarkMode ? "#1f2937" : "white", // dark gray-800 / white
+    borderColor: isDarkMode ? "#374151" : "#d1d5db", // dark gray-700 / gray-300
+    color: isDarkMode ? "white" : "black",
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: isDarkMode ? "white" : "black",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: isDarkMode ? "#1f2937" : "white",
+    color: isDarkMode ? "white" : "black",
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isFocused
+      ? isDarkMode
+        ? "#374151"
+        : "#e5e7eb" // dark gray-700 / gray-200
+      : isDarkMode
+      ? "#1f2937"
+      : "white",
+    color: isDarkMode ? "white" : "black",
+  }),
+});
+
+// DarkModeSelect component to detect theme on each render
+const DarkModeSelect = ({ control, name, ...props }) => {
+  const isDark = document.documentElement.classList.contains("dark");
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      rules={{ required: "Category is required" }}
+      render={({ field }) => (
+        <Select
+          {...field}
+          {...props}
+          styles={customSelectStyles(isDark)}
+          classNamePrefix="react-select"
+          onChange={(val) => field.onChange(val)}
+          value={field.value}
+        />
+      )}
+    />
+  );
+};
+
 const UpdatePet = () => {
-  const {id: petId } = useParams();
+  const { id: petId } = useParams();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
   const navigate = useNavigate();
-    console.log('pet id',petId)
+
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -45,7 +99,6 @@ const UpdatePet = () => {
     },
   });
 
-  // Fetch pet data by petId and reset form
   useEffect(() => {
     if (!petId) return;
 
@@ -54,8 +107,6 @@ const UpdatePet = () => {
       .get(`/pets/${petId}`)
       .then((res) => {
         const pet = res.data;
-        console.log("Pet data loaded:", res.data);
-
         reset({
           petName: pet.petName,
           petAge: pet.petAge,
@@ -75,7 +126,6 @@ const UpdatePet = () => {
       .finally(() => setLoading(false));
   }, [petId, axiosSecure, reset]);
 
-  // Handle image upload to imgbb
   const handleImageUpload = async (e) => {
     const image = e.target.files[0];
     if (!image) return;
@@ -103,7 +153,6 @@ const UpdatePet = () => {
     }
 
     try {
-      // Fetch existing pet data to preserve createdAt
       const existingPetRes = await axiosSecure.get(`/pets/${petId}`);
       const existingPet = existingPetRes.data;
 
@@ -136,18 +185,23 @@ const UpdatePet = () => {
   };
 
   if (loading) {
-    return <p className="text-center mt-12">Loading pet data...</p>;
+    return <p className="text-center mt-12 text-gray-700 dark:text-gray-300">Loading pet data...</p>;
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow space-y-6 my-12">
+    <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded shadow space-y-6 my-12">
       <h2 className="text-2xl font-semibold text-[#34B7A7] mb-8">Update Pet</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Pet Image Upload */}
         <div>
-          <Label>Pet Image</Label>
-          <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          <Label className="text-gray-700 dark:text-gray-300 font-semibold mb-1 block">Pet Image</Label>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded px-3 py-2"
+          />
           {imageUrl && (
             <img
               src={imageUrl}
@@ -159,10 +213,16 @@ const UpdatePet = () => {
 
         {/* Pet Name */}
         <div>
-          <Label htmlFor="petName">Pet Name</Label>
+          <Label
+            htmlFor="petName"
+            className="text-gray-700 dark:text-gray-300 font-semibold mb-1 block"
+          >
+            Pet Name
+          </Label>
           <Input
             id="petName"
             {...register("petName", { required: "Pet name is required" })}
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded px-3 py-2"
           />
           {errors.petName && (
             <p className="text-red-500 text-sm">{errors.petName.message}</p>
@@ -171,10 +231,16 @@ const UpdatePet = () => {
 
         {/* Pet Age */}
         <div>
-          <Label htmlFor="petAge">Pet Age</Label>
+          <Label
+            htmlFor="petAge"
+            className="text-gray-700 dark:text-gray-300 font-semibold mb-1 block"
+          >
+            Pet Age
+          </Label>
           <Input
             id="petAge"
             {...register("petAge", { required: "Pet age is required" })}
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded px-3 py-2"
           />
           {errors.petAge && (
             <p className="text-red-500 text-sm">{errors.petAge.message}</p>
@@ -183,20 +249,14 @@ const UpdatePet = () => {
 
         {/* Pet Category */}
         <div>
-          <Label>Pet Category</Label>
-          <Controller
-            name="petCategory"
+          <Label className="text-gray-700 dark:text-gray-300 font-semibold mb-1 block">
+            Pet Category
+          </Label>
+          <DarkModeSelect
             control={control}
-            rules={{ required: "Category is required" }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={categoryOptions}
-                placeholder="Select category"
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
+            name="petCategory"
+            options={categoryOptions}
+            placeholder="Select category"
           />
           {errors.petCategory && (
             <p className="text-red-500 text-sm">{errors.petCategory.message}</p>
@@ -205,10 +265,16 @@ const UpdatePet = () => {
 
         {/* Pet Location */}
         <div>
-          <Label htmlFor="petLocation">Location</Label>
+          <Label
+            htmlFor="petLocation"
+            className="text-gray-700 dark:text-gray-300 font-semibold mb-1 block"
+          >
+            Location
+          </Label>
           <Input
             id="petLocation"
             {...register("petLocation", { required: "Location is required" })}
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded px-3 py-2"
           />
           {errors.petLocation && (
             <p className="text-red-500 text-sm">{errors.petLocation.message}</p>
@@ -217,12 +283,18 @@ const UpdatePet = () => {
 
         {/* Short Description */}
         <div>
-          <Label htmlFor="shortDescription">Short Description</Label>
+          <Label
+            htmlFor="shortDescription"
+            className="text-gray-700 dark:text-gray-300 font-semibold mb-1 block"
+          >
+            Short Description
+          </Label>
           <Input
             id="shortDescription"
             {...register("shortDescription", {
               required: "Short description is required",
             })}
+            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded px-3 py-2"
           />
           {errors.shortDescription && (
             <p className="text-red-500 text-sm">{errors.shortDescription.message}</p>
@@ -231,13 +303,21 @@ const UpdatePet = () => {
 
         {/* Long Description */}
         <div>
-          <Label htmlFor="longDescription">Long Description</Label>
-          <Textarea
-            id="longDescription"
-            rows={5}
-            {...register("longDescription", {
-              required: "Long description is required",
-            })}
+          <Label
+            htmlFor="longDesc"
+            className="text-gray-700 dark:text-gray-300 font-semibold mb-1 block"
+          >
+            Long Description
+          </Label>
+          <Controller
+            name="longDescription"
+            control={control}
+            rules={{ required: "Long description is required" }}
+            render={({ field }) => (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 p-2 min-h-[150px] text-gray-900 dark:text-gray-100">
+                <TiptapEditor control={control} name="longDescription" {...field} />
+              </div>
+            )}
           />
           {errors.longDescription && (
             <p className="text-red-500 text-sm">{errors.longDescription.message}</p>

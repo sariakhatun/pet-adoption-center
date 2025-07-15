@@ -3,7 +3,7 @@ import useAuth from "@/hooks/useAuth";
 import useAxios from "@/hooks/useAxios";
 import React from "react";
 import { FaGithub } from "react-icons/fa";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
 import { auth } from "@/firebase/firebase.init"; // 👈 Your own config
@@ -13,7 +13,8 @@ const GithubLogin = () => {
   let { signInWithGithub } = useAuth();
   let navigate = useNavigate();
   let axiosInstance = useAxios();
-
+ let location = useLocation();
+   let from = location.state?.from || '/'
   const handleGithubSignIn = () => {
     signInWithGithub()
       .then(async (res) => {
@@ -38,7 +39,7 @@ const GithubLogin = () => {
           timer: 1500,
         });
 
-        navigate("/");
+        navigate(from);
       })
       .catch(async (error) => {
         if (error.code === "auth/account-exists-with-different-credential") {

@@ -1,0 +1,23 @@
+import useDarkMode from "@/hooks/useDarkMode"; // <-- new import
+
+const DarkModeSelect = ({ control, name, ...props }) => {
+  const isDark = useDarkMode(); // <-- live detection!
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      rules={{ required: "Category is required" }}
+      render={({ field }) => (
+        <Select
+          {...field}
+          {...props}
+          styles={customSelectStyles(isDark)}
+          classNamePrefix="react-select"
+          onChange={(val) => field.onChange(val)}
+          value={field.value}
+        />
+      )}
+    />
+  );
+};

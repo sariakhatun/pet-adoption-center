@@ -30,6 +30,7 @@ const AllPets = () => {
   const [selectedPet, setSelectedPet] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  // Fetch pets data with pagination
   const { data = { total: 0, pets: [] }, refetch, isLoading, isError } = useQuery({
     queryKey: ["all-pets", pageIndex],
     queryFn: async () => {
@@ -39,6 +40,7 @@ const AllPets = () => {
     keepPreviousData: true,
   });
 
+  // Delete selected pet with confirmation
   const handleDelete = async () => {
     if (!selectedPet) return;
     const result = await Swal.fire({
@@ -65,6 +67,7 @@ const AllPets = () => {
     }
   };
 
+  // Toggle adoption status with confirmation
   const toggleAdoption = async (pet) => {
     const confirmResult = await Swal.fire({
       title: pet.adopted ? "Mark as Not Adopted?" : "Mark as Adopted?",
@@ -93,6 +96,7 @@ const AllPets = () => {
     }
   };
 
+  // Define table columns with actions and status
   const columns = useMemo(() => [
     {
       header: "S/N",
@@ -133,12 +137,23 @@ const AllPets = () => {
         const pet = row.original;
         return (
           <div className="flex flex-wrap gap-2 items-center">
-            <Button size="sm" variant="outline" onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}
+            >
               <FaEdit />
             </Button>
-            <Dialog open={dialogOpen && selectedPet?._id === pet._id} onOpenChange={setDialogOpen}>
+            <Dialog
+              open={dialogOpen && selectedPet?._id === pet._id}
+              onOpenChange={setDialogOpen}
+            >
               <DialogTrigger asChild>
-                <Button size="sm" variant="destructive" onClick={() => setSelectedPet(pet)}>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setSelectedPet(pet)}
+                >
                   <FaTrash />
                 </Button>
               </DialogTrigger>
@@ -150,15 +165,21 @@ const AllPets = () => {
                   </DialogTitle>
                 </DialogHeader>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                  <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+                  <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" onClick={handleDelete}>
+                    Delete
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
             <Button
               size="sm"
+              className={
+                pet.adopted ? "bg-red-600 text-white" : "bg-green-600 text-white"
+              }
               onClick={() => toggleAdoption(pet)}
-              className={pet.adopted ? "bg-red-600 text-white" : "bg-green-600 text-white"}
             >
               <FaCheck className="mr-1" />
               {pet.adopted ? "Mark Not Adopted" : "Mark Adopted"}
@@ -167,8 +188,9 @@ const AllPets = () => {
         );
       },
     },
-  ], [pageIndex, dialogOpen, selectedPet]);
+  ], [pageIndex, dialogOpen, selectedPet, navigate]);
 
+  // Create react-table instance
   const table = useReactTable({
     data: data.pets || [],
     columns,
@@ -178,23 +200,31 @@ const AllPets = () => {
     pageCount: Math.ceil(data.total / PAGE_SIZE),
   });
 
-  if (isLoading) return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
-  if (isError) return <p className="text-center mt-10 text-red-500">Failed to load pets</p>;
+  if (isLoading) return <AdoptionRequestSkeleton />;
+  if (isError)
+    return (
+      <p className="text-center mt-10 text-red-500 dark:text-red-400">
+        Failed to load pets
+      </p>
+    );
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10">
+    <div className="p-4 sm:p-6 lg:p-10 bg-white dark:bg-gray-900 rounded-md">
       <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#34B7A7] mb-6 text-center sm:text-left">
         All Pets ({data.total})
       </h2>
 
       {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto rounded border">
-        <table className="w-full table-auto border-collapse">
-          <thead className="bg-gray-100">
+      <div className="hidden md:block overflow-x-auto rounded border border-gray-300 dark:border-gray-700">
+        <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700 rounded-md">
+          <thead className="bg-gray-100 dark:bg-gray-800">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <th key={header.id} className="border px-4 py-2 text-left">
+                  <th
+                    key={header.id}
+                    className="border px-4 py-2 text-left text-gray-700 dark:text-gray-300"
+                  >
                     {header.isPlaceholder ? null : header.column.columnDef.header}
                   </th>
                 ))}
@@ -203,9 +233,15 @@ const AllPets = () => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map(row => (
-              <tr key={row.id} className="border-t">
+              <tr
+                key={row.id}
+                className="border-t border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="border px-4 py-2">
+                  <td
+                    key={cell.id}
+                    className="border px-4 py-2 text-gray-900 dark:text-gray-100"
+                  >
                     {cell.column.columnDef.cell
                       ? cell.column.columnDef.cell(cell)
                       : cell.getValue()}
@@ -220,18 +256,36 @@ const AllPets = () => {
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
         {data.pets.map((pet, index) => (
-          <div key={pet._id} className="bg-white rounded shadow p-4 space-y-2">
+          <div
+            key={pet._id}
+            className="bg-white dark:bg-gray-800 rounded shadow p-4 space-y-2"
+          >
             <div className="flex justify-between items-center">
               <h3 className="font-bold text-lg text-[#34B7A7]">{pet.petName}</h3>
-              <span className="text-sm">{index + 1 + pageIndex * PAGE_SIZE}</span>
+              <span className="text-sm text-gray-900 dark:text-gray-100">
+                {index + 1 + pageIndex * PAGE_SIZE}
+              </span>
             </div>
-            <img src={pet.petImage} alt="Pet" className="w-full h-40 object-cover rounded" />
-            <p className="text-sm text-gray-600">Category: {pet.petCategory}</p>
-            <p className={`text-sm font-semibold ${pet.adopted ? "text-green-600" : "text-red-600"}`}>
+            <img
+              src={pet.petImage}
+              alt="Pet"
+              className="w-full h-40 object-cover rounded"
+            />
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Category: {pet.petCategory}
+            </p>
+            <p
+              className={`text-sm font-semibold ${
+                pet.adopted ? "text-green-600" : "text-red-600"
+              }`}
+            >
               {pet.adopted ? "Adopted" : "Not Adopted"}
             </p>
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}>
+              <Button
+                size="sm"
+                onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}
+              >
                 <FaEdit />
               </Button>
               <Button
@@ -268,14 +322,16 @@ const AllPets = () => {
           >
             Previous
           </Button>
-          <span className="self-center text-sm mt-1">
+          <span className="self-center text-sm mt-1 text-gray-900 dark:text-gray-100">
             Page {pageIndex + 1} of {table.getPageCount()}
           </span>
           <Button
             size="sm"
             variant="outline"
             disabled={pageIndex >= table.getPageCount() - 1}
-            onClick={() => setPageIndex(p => Math.min(p + 1, table.getPageCount() - 1))}
+            onClick={() =>
+              setPageIndex(p => Math.min(p + 1, table.getPageCount() - 1))
+            }
           >
             Next
           </Button>

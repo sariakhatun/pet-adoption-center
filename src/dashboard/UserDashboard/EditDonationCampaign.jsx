@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import Swal from "sweetalert2";
+import TiptapEditor from "@/pages/shared/TiptapEditor";
+import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
 const EditDonationCampaign = () => {
   const { id } = useParams();
@@ -21,6 +22,7 @@ const EditDonationCampaign = () => {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -105,32 +107,52 @@ const EditDonationCampaign = () => {
     }
   };
 
-  if (loading) return <p className="p-6">Loading...</p>;
+  if (loading) return <AdoptionRequestSkeleton />;
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow space-y-6 my-12">
-      <h2 className="text-2xl font-semibold text-[#34B7A7] mb-6">Edit Donation Campaign</h2>
+    <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded shadow space-y-6 my-12">
+      <h2 className="text-2xl font-semibold text-[#34B7A7] dark:text-[#34B7A7] mb-6">
+        Edit Donation Campaign
+      </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <Label>Pet Image</Label>
-          <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          <Label className="dark:text-gray-300">Pet Image</Label>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="dark:bg-gray-800 dark:text-gray-100"
+          />
           {imageUrl && (
-            <img src={imageUrl} alt="Preview" className="w-32 h-32 mt-2 object-cover rounded" />
+            <img
+              src={imageUrl}
+              alt="Preview"
+              className="w-32 h-32 mt-2 object-cover rounded"
+            />
           )}
         </div>
 
+        {/* Pet Name */}
         <div>
-          <Label htmlFor="petName">Pet Name</Label>
+          <Label htmlFor="petName" className="dark:text-gray-300">
+            Pet Name
+          </Label>
           <Input
             id="petName"
             {...register("petName", { required: "Pet name is required" })}
+            className="dark:bg-gray-800 dark:text-gray-100"
           />
-          {errors.petName && <p className="text-red-500 text-sm">{errors.petName.message}</p>}
+          {errors.petName && (
+            <p className="text-red-500 text-sm">{errors.petName.message}</p>
+          )}
         </div>
 
+        {/* Maximum Donation Amount */}
         <div>
-          <Label htmlFor="maxDonationAmount">Maximum Donation Amount</Label>
+          <Label htmlFor="maxDonationAmount" className="dark:text-gray-300">
+            Maximum Donation Amount
+          </Label>
           <Input
             id="maxDonationAmount"
             type="number"
@@ -139,41 +161,56 @@ const EditDonationCampaign = () => {
               required: "Amount is required",
               min: { value: 1, message: "Amount must be at least 1" },
             })}
+            className="dark:bg-gray-800 dark:text-gray-100"
           />
           {errors.maxDonationAmount && (
             <p className="text-red-500 text-sm">{errors.maxDonationAmount.message}</p>
           )}
         </div>
 
+        {/* Donation Deadline */}
         <div>
-          <Label htmlFor="donationDeadline">Last Date of Donation</Label>
+          <Label htmlFor="donationDeadline" className="dark:text-gray-300">
+            Last Date of Donation
+          </Label>
           <Input
             id="donationDeadline"
             type="date"
             {...register("donationDeadline", { required: "Donation deadline is required" })}
+            className="dark:bg-gray-800 dark:text-gray-100"
           />
           {errors.donationDeadline && (
             <p className="text-red-500 text-sm">{errors.donationDeadline.message}</p>
           )}
         </div>
 
+        {/* Short Description */}
         <div>
-          <Label htmlFor="shortDescription">Short Description</Label>
+          <Label htmlFor="shortDescription" className="dark:text-gray-300">
+            Short Description
+          </Label>
           <Input
             id="shortDescription"
             {...register("shortDescription", { required: "Short description is required" })}
+            className="dark:bg-gray-800 dark:text-gray-100"
           />
           {errors.shortDescription && (
             <p className="text-red-500 text-sm">{errors.shortDescription.message}</p>
           )}
         </div>
 
+        {/* Long Description */}
         <div>
-          <Label htmlFor="longDescription">Long Description</Label>
-          <Textarea
-            id="longDescription"
-            rows={5}
-            {...register("longDescription", { required: "Long description is required" })}
+          <Label htmlFor="longDescription" className="dark:text-gray-300">
+            Long Description
+          </Label>
+          <Controller
+            name="longDescription"
+            control={control}
+            rules={{ required: "Long description is required" }}
+            render={({ field }) => (
+              <TiptapEditor {...field} control={control} name="longDescription" />
+            )}
           />
           {errors.longDescription && (
             <p className="text-red-500 text-sm">{errors.longDescription.message}</p>

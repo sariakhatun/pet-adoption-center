@@ -41,32 +41,55 @@ const MyDonation = () => {
     },
   });
 
-  if (isLoading) return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
-  if (isError) return <p className="text-center text-red-600">Error loading donations.</p>;
-  if (!donations.length) return <p className="text-center">No donations found.</p>;
+  if (isLoading) return <AdoptionRequestSkeleton />;
+  if (isError)
+    return (
+      <p className="text-center text-red-600 dark:text-red-400">
+        Error loading donations.
+      </p>
+    );
+  if (!donations.length)
+    return (
+      <p className="text-center text-gray-700 dark:text-gray-300">
+        No donations found.
+      </p>
+    );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 rounded-md">
       <h2 className="text-xl sm:text-2xl font-semibold text-[#34B7A7] mb-6 text-center sm:text-left">
         My Donations (Page {page + 1})
       </h2>
 
-      {/* Table for md+ and Cards for sm */}
-      <div className="hidden md:block overflow-x-auto rounded-md border">
-        <table className="w-full table-auto">
-          <thead className="bg-gray-100">
+      {/* Table for md+ */}
+      <div className="hidden md:block overflow-x-auto rounded-md border border-gray-300 dark:border-gray-700">
+        <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700 rounded-md">
+          <thead className="bg-gray-100 dark:bg-gray-800">
             <tr>
-              <th className="py-2 px-4 text-left">S/N</th>
-              <th className="py-2 px-4 text-left">Pet Image</th>
-              <th className="py-2 px-4 text-left">Pet Name</th>
-              <th className="py-2 px-4 text-left">Donated Amount</th>
-              <th className="py-2 px-4 text-left">Actions</th>
+              <th className="py-2 px-4 text-left text-gray-700 dark:text-gray-300">
+                S/N
+              </th>
+              <th className="py-2 px-4 text-left text-gray-700 dark:text-gray-300">
+                Pet Image
+              </th>
+              <th className="py-2 px-4 text-left text-gray-700 dark:text-gray-300">
+                Pet Name
+              </th>
+              <th className="py-2 px-4 text-left text-gray-700 dark:text-gray-300">
+                Donated Amount
+              </th>
+              <th className="py-2 px-4 text-left text-gray-700 dark:text-gray-300">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {donations.map((donation, index) => (
-              <tr key={donation._id} className="border-t">
-                <td className="py-2 px-4 font-semibold">
+              <tr
+                key={donation._id}
+                className="border-t border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <td className="py-2 px-4 font-semibold text-gray-900 dark:text-gray-100">
                   {page * LIMIT + index + 1}
                 </td>
                 <td className="py-2 px-4">
@@ -76,9 +99,12 @@ const MyDonation = () => {
                     className="w-16 h-16 object-cover rounded"
                   />
                 </td>
-                <td className="py-2 px-4">{donation.petName || "N/A"}</td>
-                <td className="py-2 px-4">
-                  ৳{typeof donation.amount === "number"
+                <td className="py-2 px-4 text-gray-900 dark:text-gray-100">
+                  {donation.petName || "N/A"}
+                </td>
+                <td className="py-2 px-4 text-gray-900 dark:text-gray-100">
+                  ৳
+                  {typeof donation.amount === "number"
                     ? donation.amount.toFixed(2)
                     : "0.00"}
                 </td>
@@ -101,7 +127,9 @@ const MyDonation = () => {
                     }}
                     disabled={refundMutation.isLoading}
                   >
-                    {refundMutation.isLoading ? "Processing..." : "Ask for Refund"}
+                    {refundMutation.isLoading
+                      ? "Processing..."
+                      : "Ask for Refund"}
                   </Button>
                 </td>
               </tr>
@@ -112,8 +140,11 @@ const MyDonation = () => {
 
       {/* Mobile view: stacked cards */}
       <div className="md:hidden space-y-4">
-        {donations.map((donation, index) => (
-          <div key={donation._id} className="border rounded-lg p-4 shadow-sm">
+        {donations.map((donation) => (
+          <div
+            key={donation._id}
+            className="border rounded-lg p-4 shadow-sm bg-white dark:bg-gray-800"
+          >
             <div className="flex items-center gap-4 mb-2">
               <img
                 src={donation.petImage || "/placeholder.png"}
@@ -121,9 +152,12 @@ const MyDonation = () => {
                 className="w-16 h-16 object-cover rounded"
               />
               <div>
-                <p className="font-bold">{donation.petName || "N/A"}</p>
-                <p className="text-sm text-gray-600">
-                  Amount: ৳{typeof donation.amount === "number"
+                <p className="font-bold text-gray-900 dark:text-gray-100">
+                  {donation.petName || "N/A"}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Amount: ৳
+                  {typeof donation.amount === "number"
                     ? donation.amount.toFixed(2)
                     : "0.00"}
                 </p>
@@ -148,7 +182,9 @@ const MyDonation = () => {
                 }}
                 disabled={refundMutation.isLoading}
               >
-                {refundMutation.isLoading ? "Processing..." : "Ask for Refund"}
+                {refundMutation.isLoading
+                  ? "Processing..."
+                  : "Ask for Refund"}
               </Button>
             </div>
           </div>
@@ -156,7 +192,7 @@ const MyDonation = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 text-gray-900 dark:text-gray-100">
         <Button
           size="sm"
           variant="outline"

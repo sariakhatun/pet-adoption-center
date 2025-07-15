@@ -179,6 +179,8 @@ const DonationDetails = () => {
             await Swal.fire({
               icon: "success",
               title: "Thank you for your donation!",
+              text: "Redirecting to My Donations...",
+
               timer: 1500,
               showConfirmButton: false,
               position: "top-end",
@@ -188,6 +190,7 @@ const DonationDetails = () => {
             reset();
             setCardDetails(null);
             setIsDialogOpen(false);
+            navigate("/dashboard/my-donations");
           }
         } catch (error) {
           if (error.response?.status === 403) {

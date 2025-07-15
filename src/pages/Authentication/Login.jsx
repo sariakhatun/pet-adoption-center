@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { FaGoogle, FaGithub } from "react-icons/fa";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "@/hooks/useAuth";
 import Swal from "sweetalert2";
 import GoogleLogin from "./GoogleLogin";
@@ -17,6 +17,8 @@ const Login = () => {
   } = useForm();
   let navigate = useNavigate();
   let { loginUser } = useAuth();
+  let location = useLocation();
+   let from = location.state?.from || '/'
 
   const onSubmit = (data) => {
     console.log("Registering user:", data);
@@ -31,7 +33,7 @@ const Login = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      navigate('/')
+      navigate(from)
     });
   };
 

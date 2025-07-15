@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import cta1 from "../../../assets/pic.jpeg"; // Replace with real paths
+import cta1 from "../../../assets/pic.jpeg";
 import cta2 from "../../../assets/pic2.jpeg";
 import cta3 from "../../../assets/pic3.jpeg";
 import { FaPaw } from "react-icons/fa";
@@ -27,11 +27,18 @@ const CallToActionSection = () => {
   ];
 
   return (
-    <section className="my-20 px-4 sm:px-6 lg:px-12">
+    <section
+      className="my-20 px-4 sm:px-6 lg:px-12"
+      aria-labelledby="cta-section-title"
+      role="region"
+    >
       {/* Section Heading */}
       <div className="text-center mb-12 max-w-3xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1F2937] leading-snug flex items-center justify-center gap-2">
-          <FaPaw className="text-[#34B7A7] text-4xl" />
+        <h2
+          id="cta-section-title"
+          className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1F2937] leading-snug flex items-center justify-center gap-2"
+        >
+          <FaPaw className="text-[#34B7A7] text-4xl" aria-hidden="true" />
           <span>
             <span className="text-[#34B7A7]">Call to Action</span> Section
           </span>
@@ -46,7 +53,11 @@ const CallToActionSection = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {cards.map(({ id, title, text, image }) => (
           <Card key={id} className="overflow-hidden shadow-md">
-            <img src={image} alt={title} className="w-full h-56 object-cover" />
+            <img
+              src={image}
+              alt={title}
+              className="w-full aspect-[4/3] object-cover"
+            />
             <CardHeader>
               <CardTitle className="text-xl text-[#1F2937]">{title}</CardTitle>
             </CardHeader>

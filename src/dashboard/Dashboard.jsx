@@ -23,7 +23,7 @@ const Dashboard = () => {
   console.log("Role in Dashboard:", role, "Loading:", roleLoading);
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300">
       {/* Sidebar for desktop */}
       <aside className="hidden lg:flex flex-col w-72 bg-[#F3F4F6] p-6 shadow-lg">
         <nav className="flex flex-col space-y-2">

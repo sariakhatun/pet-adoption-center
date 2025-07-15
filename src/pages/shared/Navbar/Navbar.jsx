@@ -12,6 +12,7 @@ import {
 import Swal from "sweetalert2";
 import PetNectLogo from "../logo/PetNectLogo";
 import useAuth from "@/hooks/useAuth";
+import ThemeToggle from "../ThemeToggle";
 
 const Navbar = () => {
   const { user, logOut } = useAuth();
@@ -47,7 +48,7 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="bg-white shadow-sm w-full px-4 py-3 flex justify-between items-center">
+    <nav className=" shadow-sm w-full px-4 py-3 flex justify-between items-center bg-white dark:bg-gray-900 text-black dark:text-white">
       {/* Left - Logo + Mobile Menu */}
       <div className="flex items-center gap-2 lg:gap-4">
         {/* Mobile Menu */}
@@ -73,6 +74,7 @@ const Navbar = () => {
 
       {/* Right - Auth/Profile */}
       <div className="flex items-center gap-3">
+        <ThemeToggle></ThemeToggle>
         {user ? (
           <>
             {/* Profile Image Dropdown */}

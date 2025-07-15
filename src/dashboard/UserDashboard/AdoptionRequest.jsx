@@ -50,11 +50,11 @@ const AdoptionRequest = () => {
   };
 
   if (isLoading)
-    return <AdoptionRequestSkeleton></AdoptionRequestSkeleton>
+    return <AdoptionRequestSkeleton />;
 
   if (requests.length === 0)
     return (
-      <p className="text-gray-500 text-center text-lg">
+      <p className="text-gray-500 dark:text-gray-400 text-center text-lg">
         No adoption requests found.
       </p>
     );
@@ -66,15 +66,15 @@ const AdoptionRequest = () => {
       </h2>
 
       {/* TABLE FOR LG+ */}
-      <div className="hidden lg:block border border-gray-200 rounded-lg overflow-x-auto">
+      <div className="hidden lg:block border border-gray-200 dark:border-gray-700 rounded-lg overflow-x-auto">
         <table className="w-full min-w-full table-auto border-collapse">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-100 dark:bg-gray-800">
             <tr>
               {["Pet", "Adopter Name", "Email", "Phone", "Address", "Status", "Actions"].map(
                 (header) => (
                   <th
                     key={header}
-                    className="text-left px-6 py-3 text-sm font-semibold text-gray-700 whitespace-nowrap"
+                    className="text-left px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap"
                   >
                     {header}
                   </th>
@@ -86,7 +86,7 @@ const AdoptionRequest = () => {
             {requests.map((req) => (
               <tr
                 key={req._id}
-                className="hover:bg-gray-50 border-b border-gray-200"
+                className="hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
@@ -95,25 +95,25 @@ const AdoptionRequest = () => {
                       alt={req.petName}
                       className="w-12 h-12 rounded object-cover"
                     />
-                    <span className="text-base font-medium">{req.petName}</span>
+                    <span className="text-base font-medium text-gray-900 dark:text-gray-100">{req.petName}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-base text-center">
+                <td className="px-6 py-4 whitespace-nowrap text-base text-center text-gray-900 dark:text-gray-100">
                   {req.adopterName}
                 </td>
-                <td className="px-6 py-4 max-w-xs break-words text-sm">
+                <td className="px-6 py-4 max-w-xs break-words text-sm text-gray-700 dark:text-gray-300">
                   {req.adopterEmail}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">{req.phone}</td>
-                <td className="px-6 py-4 max-w-xs truncate text-sm">{req.address}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{req.phone}</td>
+                <td className="px-6 py-4 max-w-xs truncate text-sm text-gray-700 dark:text-gray-300">{req.address}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`capitalize px-3 py-1 rounded text-sm ${
                       req.status === "accepted"
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-400"
                         : req.status === "rejected"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
+                        ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-400"
+                        : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-400"
                     }`}
                   >
                     {req.status || "pending"}
@@ -150,7 +150,7 @@ const AdoptionRequest = () => {
         {requests.map((req) => (
           <div
             key={req._id}
-            className="border border-gray-200 rounded-lg p-4 shadow-sm"
+            className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white dark:bg-gray-900"
           >
             <div className="flex items-center gap-4 mb-2">
               <img
@@ -159,28 +159,28 @@ const AdoptionRequest = () => {
                 className="w-16 h-16 rounded object-cover"
               />
               <div>
-                <h3 className="text-lg font-semibold">{req.petName}</h3>
-                <p className="text-sm text-gray-600">{req.adopterName}</p>
-                <p className="text-sm text-gray-600 break-words max-w-xs">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{req.petName}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{req.adopterName}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 break-words max-w-xs">
                   {req.adopterEmail}
                 </p>
               </div>
             </div>
 
-            <p className="text-sm text-gray-600 mb-1">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
               <strong>Phone:</strong> {req.phone}
             </p>
-            <p className="text-sm text-gray-600 mb-2 truncate max-w-xs">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 truncate max-w-xs">
               <strong>Address:</strong> {req.address}
             </p>
 
             <span
               className={`capitalize px-2 py-1 rounded text-sm inline-block mb-3 ${
                 req.status === "accepted"
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-400"
                   : req.status === "rejected"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-yellow-100 text-yellow-700"
+                  ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-400"
+                  : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-400"
               }`}
             >
               {req.status || "pending"}

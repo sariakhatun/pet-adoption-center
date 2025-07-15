@@ -1,7 +1,6 @@
 import useAuth from "@/hooks/useAuth";
 import React from "react";
 import { Navigate, useLocation } from "react-router";
-import { Loader2 } from "lucide-react"
 import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
 const PrivateRoute = ({children}) => {

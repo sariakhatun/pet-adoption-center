@@ -9,6 +9,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import CardGridSkeleton from "@/skeleton/CardGridSkeleton";
 
 const PetsByCategory = () => {
   const { category } = useParams();
@@ -26,7 +27,7 @@ console.log('hello')
     },
   });
 
-  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (isLoading) return <CardGridSkeleton></CardGridSkeleton>
   if (isError || pets.length === 0)
     return (
       <p className="text-center mt-10 text-red-500 font-medium">

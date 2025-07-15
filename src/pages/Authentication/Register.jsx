@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { FaGoogle, FaGithub } from "react-icons/fa"
 import { useState } from "react"
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import useAuth from '@/hooks/useAuth';
 import Swal from 'sweetalert2';
 import GoogleLogin from './GoogleLogin';
@@ -18,6 +18,8 @@ const Register = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+   let location = useLocation();
+   let from = location.state?.from || '/'
    const [imagePreview, setImagePreview] = useState(null);
    let axiosInstance = useAxios()
    let {createUser,updateUserProfile}=useAuth()
@@ -68,7 +70,7 @@ const Register = () => {
                 showConfirmButton: false,
                 timer: 1500,
               })
-              navigate('/')
+              navigate(from)
     })
     .catch(error=>{
       console.log(error)

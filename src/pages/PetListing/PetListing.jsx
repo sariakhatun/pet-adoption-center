@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CardGridSkeleton from "@/skeleton/CardGridSkeleton";
+import SingleCardSkeleton from "@/skeleton/SingleCardSkeleton";
 
 const PetListing = () => {
   const axiosSecure = useAxiosSecure();
@@ -22,7 +23,7 @@ const PetListing = () => {
   const [category, setCategory] = useState("");
   const { ref, inView } = useInView();
 
-  const { data, fetchNextPage, hasNextPage, isLoading, refetch } =
+  const { data, fetchNextPage,isFetchingNextPage, hasNextPage, isLoading, refetch } =
     useInfiniteQuery({
       queryKey: ["pets", search, category],
       queryFn: async ({ pageParam = 0 }) => {
@@ -47,6 +48,15 @@ const PetListing = () => {
   const handleCategory = (value) => {
     setCategory(value === "all" ? "" : value);
   };
+
+  if (isLoading) {
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-10">
+      <CardGridSkeleton />
+    </div>
+  );
+}
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -114,8 +124,9 @@ const PetListing = () => {
       </div>
 
       {/* Infinite Scroll Observer */}
-      <div ref={ref} className="h-10 mt-10">
-        {isLoading && <CardGridSkeleton></CardGridSkeleton>}
+      <div ref={ref} className="h-10 mt-10  ">
+        {isFetchingNextPage && <CardGridSkeleton></CardGridSkeleton>
+       }
       </div>
     </div>
   );

@@ -3,13 +3,15 @@ import useAuth from "@/hooks/useAuth";
 import useAxios from "@/hooks/useAxios";
 import React from "react";
 import { FaGoogle } from "react-icons/fa";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
 const GoogleLogin = () => {
   let { singInWithGoogle } = useAuth();
   let navigate = useNavigate();
   let axiosInstance = useAxios()
+   let location = useLocation();
+   let from = location.state?.from || '/'
   let handleGoogleSignIn = () => {
     singInWithGoogle()
       .then(async (res) => {
@@ -36,7 +38,7 @@ const GoogleLogin = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        navigate("/");
+        navigate(from);
       })
       .catch((err) => {
         console.log(err);

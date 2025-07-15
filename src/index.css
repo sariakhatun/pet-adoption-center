@@ -5,6 +5,10 @@
 .active{
   color: #34B7A7;
 }
+.react-select__control {
+  transition: background-color 0.2s ease;
+}
+
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
