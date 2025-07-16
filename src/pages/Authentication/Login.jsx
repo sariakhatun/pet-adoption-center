@@ -9,32 +9,52 @@ import useAuth from "@/hooks/useAuth";
 import Swal from "sweetalert2";
 import GoogleLogin from "./GoogleLogin";
 import GithubLogin from "./GithubLogin";
+
 const Login = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm();
+
   let navigate = useNavigate();
   let { loginUser } = useAuth();
   let location = useLocation();
-   let from = location.state?.from || '/'
+  let from = location.state?.from || '/';
 
   const onSubmit = (data) => {
     console.log("Registering user:", data);
-    // TODO: Upload image to cloud and handle registration
 
-    loginUser(data.email, data.password).then((res) => {
-      console.log(res.user);
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Logged in Successfully",
-        showConfirmButton: false,
-        timer: 1500,
+    loginUser(data.email, data.password)
+      .then((res) => {
+        console.log(res.user);
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Logged in Successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate(from);
+      })
+      .catch((error) => {
+        console.error("Login error:", error.message);
+
+        if (error.code === "auth/user-not-found") {
+          Swal.fire("Error", "Email not registered. Please register first.", "error");
+          setError("email", { type: "manual", message: "Email not registered" });
+        } else if (error.code === "auth/wrong-password") {
+          Swal.fire("Error", "Incorrect password", "error");
+          setError("password", { type: "manual", message: "Incorrect password" });
+        } else if (error.code === "auth/too-many-requests") {
+          Swal.fire("Error", "Too many failed attempts. Try again later.", "error");
+        } else if (error.code === "auth/network-request-failed") {
+          Swal.fire("Error", "Network issue. Please check your connection.", "error");
+        } else {
+          Swal.fire("Error", error.message, "error");
+        }
       });
-      navigate(from)
-    });
   };
 
   return (
@@ -67,13 +87,16 @@ const Login = () => {
               type="password"
               {...register("password", {
                 required: "Password is required",
-                minLength: 6,
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
               })}
               placeholder="Enter your password"
             />
             {errors.password && (
               <p className="text-red-500 text-sm">
-                Password must be at least 6 characters
+                {errors.password.message}
               </p>
             )}
           </div>
@@ -101,8 +124,8 @@ const Login = () => {
 
       {/* Social Login */}
       <div className="mt-6 space-y-3">
-        <GoogleLogin></GoogleLogin>
-        <GithubLogin></GithubLogin>
+        <GoogleLogin />
+        <GithubLogin />
       </div>
     </section>
   );
