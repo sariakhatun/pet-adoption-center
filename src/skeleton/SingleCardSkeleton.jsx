@@ -1,45 +1,33 @@
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import React from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const CardGridSkeleton = ({ count = 6 }) => {
+const SingleCardSkeleton = () => {
   return (
-    <div
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-      aria-busy="true"
-      aria-label="Loading content"
-    >
-      {[...Array(count)].map((_, i) => (
-        <div
-          key={i}
-          className="p-4 bg-white dark:bg-gray-800 rounded shadow dark:shadow-md"
-          role="status"
-          aria-live="polite"
-        >
-          <Skeleton
-            height={180}
-            className="rounded"
-            baseColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#2d3748" : "#e2e8f0"}
-            highlightColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#4a5568" : "#f0f4f8"}
-          />
-          <div className="mt-4">
-            <Skeleton
-              height={20}
-              width="80%"
-              baseColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#2d3748" : "#e2e8f0"}
-              highlightColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#4a5568" : "#f0f4f8"}
-            />
-            <Skeleton
-              height={16}
-              width="60%"
-              className="mt-2"
-              baseColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#2d3748" : "#e2e8f0"}
-              highlightColor={window.matchMedia('(prefers-color-scheme: dark)').matches ? "#4a5568" : "#f0f4f8"}
-            />
-          </div>
+    <div className="max-w-5xl mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row gap-8 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 items-center">
+        {/* Left: Pet Image */}
+        <div className="md:w-1/2 w-full flex justify-center items-start">
+          <Skeleton className="w-full h-[450px] lg:h-[650px] rounded-lg" />
         </div>
-      ))}
+
+        {/* Right: Pet Info */}
+        <div className="md:w-1/2 w-full space-y-4">
+          <Skeleton className="h-10 w-2/3" /> {/* Pet name */}
+          <Skeleton className="h-6 w-1/3" /> {/* Age */}
+          <Skeleton className="h-6 w-1/2" /> {/* Location */}
+          <Skeleton className="h-6 w-1/3" /> {/* Category */}
+          <Skeleton className="h-6 w-full" /> {/* Short Description */}
+          <Skeleton className="h-6 w-1/4" /> {/* Status */}
+          <Skeleton className="h-5 w-2/3" /> {/* Uploader */}
+          <Skeleton className="h-5 w-1/2" /> {/* Created At */}
+          <Skeleton className="h-24 w-full rounded" /> {/* Long Description */}
+
+          {/* Adopt Button */}
+          <Skeleton className="h-10 w-full md:w-1/2 rounded-md" />
+        </div>
+      </div>
     </div>
   );
 };
 
-export default CardGridSkeleton;
+export default SingleCardSkeleton;

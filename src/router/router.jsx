@@ -25,6 +25,7 @@ import AllDonations from "@/dashboard/UserDashboard/AllDonations";
 import Forbidden from "@/pages/forbidden/Forbidden";
 import AdminRoute from "./AdminRoute";
 import DashboardHome from "@/dashboard/DashboardHome";
+import ErrorPage from "@/pages/shared/ErrorPage";
 
 export const router = createBrowserRouter([
   {
@@ -176,6 +177,10 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path:'*',
+        Component:ErrorPage
+      }
     ],
   },
 ]);

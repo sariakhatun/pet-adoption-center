@@ -17,7 +17,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/pets": "https://b11a12-server-side-sariakhatun.vercel.app",
+      "/pets": "http://localhost:5000",
     },
      historyApiFallback: true, 
   },

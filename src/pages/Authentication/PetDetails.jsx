@@ -46,12 +46,12 @@ const PetDetails = () => {
 
   const { register, handleSubmit, reset } = useForm();
 
-  if (!user) return (
-    <div className="flex justify-center items-center h-screen">
-      <SingleCardSkeleton />
-    </div>
-  );
-  if (isLoading) return (
+  // if (!user) return (
+  //   <div className="flex justify-center items-center h-screen">
+  //     <SingleCardSkeleton />
+  //   </div>
+  // );
+  if (isLoading || !user) return (
     <div className="flex justify-center items-center h-screen">
       <SingleCardSkeleton />
     </div>
