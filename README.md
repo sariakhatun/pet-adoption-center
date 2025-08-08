@@ -1,66 +1,109 @@
 
-# 🐾 PetNect – Pet Adoption Center
+## 🐾 PetNect – Pet Adoption Center
 
-Welcome to **PetNect**, a modern web application designed to help users adopt pets, create donation campaigns, and connect pet lovers. The platform provides a seamless experience for adopters, donors, and administrators to manage pet data, requests, and donations efficiently.
+### Description
+
+PetNect is a modern, responsive web application that helps users adopt pets, create donation campaigns, and connect with other pet lovers. The platform offers smooth adoption request management, donation tracking, and admin moderation features.
+
+### Live Project Link
+
+PetNect Live Site : https://b11a12-sariakhatun.web.app/
+
+### Technologies Used
+
+* **Frontend:** React, Tailwind CSS, ShadCN UI, React Hook Form, React Router
+* **Backend:** Node.js, Express.js, MongoDB
+* **Authentication:** Firebase Authentication (Google & Email/Password)
+* **Payments:** Stripe
+* **State & Data Fetching:** TanStack Query, Axios
+* **UI Icons:** Lucide React, React Icons
+* **Notifications:** SweetAlert2
+
+
+
+### Overview
+PetNect is a user-friendly pet adoption platform that allows users to discover and adopt pets, create and manage donation campaigns, and connect with a community of pet lovers. With integrated authentication, payment support, and an admin dashboard, it streamlines pet adoption and donation management in a responsive and modern interface.
+
+### Screenshot
+
+
+![PetNect Dashboard Screenshot](src\assets\b11a12-sariakhatun.web.app_(Nest Hub Max).png)
+
 
 ---
 
-## 🎯 Purpose
+### Core Features
 
-The purpose of this platform is to:
-- Help users browse adoptable pets and submit adoption requests.
-- Enable registered users to create and manage donation campaigns.
-- Allow admins to monitor all pets, donations, and assign roles.
-- Provide a responsive, user-friendly interface for all device sizes.
+* User registration/login with Firebase (Google & email/password)
+* Browse adoptable pets and submit adoption requests through modals
+* Add, manage, and view personal pet listings
+* Create and track donation campaigns with progress bars
+* Admin dashboard for user role management, pet, and donation moderation
+* Responsive design with light/dark mode support
+* Elegant error handling and loading states
 
----
+### Dependencies
 
-## 🌐 Live Site
-
-🔗 live link : https://b11a12-sariakhatun.web.app
-
-
-## 🚀 Key Features
-
-### 🐶 General User Features
-- Register/login via **Firebase Authentication** (Google & Email/Password).
-- View detailed pet profiles with descriptions, age, and location.
-- Submit **adoption requests** via a modal form.
-- View **My Added Pets** and manage listings.
-- Create and manage **donation campaigns** with progress tracking.
-- View personal **donation history**.
-
-### 🛡️ Admin Features
-- Promote users to admin role.
-- View all pets and donations site-wide.
-- Moderate adoption requests and user data.
-
-### 📱 UI/UX Highlights
-- Responsive dashboard with **light/dark mode** support.
-- **Quick Actions**, Stats, and Skeleton loading for better UX.
-- Uses **ShadCN UI**, **Tailwind CSS**, and **React Icons** for a modern interface.
-- Elegant **error handling** and fallback error page for unexpected issues.
+* react-router-dom
+* firebase
+* stripe
+* axios
+* react-hook-form
+* @tanstack/react-query
+* shadcn/ui
+* lucide-react
+* react-icons
+* sweetalert2
+* nodejs
+* cors
+* express js
 
 ---
 
-## 📦 NPM Packages Used
+### How to Run Locally
 
-- **React Router Dom** – For routing and protected routes.
-- **Firebase** – For authentication (Google & email/password).
--- **Stripe** - For make payment
-- **Axios** – For HTTP requests.
-- **React Hook Form** – For managing form inputs and validation.
-- **TanStack Query (@tanstack/react-query)** – For data fetching and caching.
-- **ShadCN UI** – For UI components (Dialog, Input, Button, etc.).
-- **Lucide React** – For modern UI icons.
-- **React Icons** – For dashboard icons (FontAwesome, etc.).
-- **SweetAlert2** – For success and error popups.
+1. **Clone the repository:**
 
+   ```bash
+  git clone https://github.com/sariakhatun/pet-adoption-center
+   cd pet-adoption-center
+   ```
 
-## 🌐 Backend Overview
+2. **Install dependencies:**
 
-The backend is built using **Node.js**, **Express**, and **MongoDB**. It provides all RESTful endpoints for managing pets, users, and donations.
+   ```bash
+   npm install
+   ```
 
+3. **Setup environment variables:**
+   Create a `.env` file in the root with your Firebase, Stripe, and backend URLs/configs:
 
+   ```
+   REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+   REACT_APP_STRIPE_PUBLIC_KEY=your_stripe_public_key
+   REACT_APP_BACKEND_URL=http://localhost:5000
+   ```
 
+4. **Start the development server:**
+
+   ```bash
+   npm start
+   ```
+
+5. **Run backend separately:**
+   Navigate to your backend folder and run:
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+6. **Open your browser at:**
+
+   ```
+   http://localhost:3000
+   ```
+
+---
 
