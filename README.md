@@ -27,7 +27,8 @@ PetNect is a user-friendly pet adoption platform that allows users to discover a
 ### Screenshot
 
 
-![PetNect Dashboard Screenshot](src\assets\b11a12-sariakhatun.web.app_(Nest Hub Max).png)
+![PetNect Dashboard Screenshot](src/assets/b11a12-sariakhatun.web.app_(Nest Hub Max).png)
+
 
 
 ---
