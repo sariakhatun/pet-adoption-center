@@ -64,8 +64,7 @@ PetNect is a user-friendly pet adoption platform that allows users to discover a
 ### How to Run Locally
 
 1. **Clone the repository:**
-
-   ```bash
+ ```bash
   git clone https://github.com/sariakhatun/pet-adoption-center
    cd pet-adoption-center
    ```
