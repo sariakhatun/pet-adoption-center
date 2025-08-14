@@ -7,7 +7,7 @@ PetNect is a modern, responsive web application that helps users adopt pets, cre
 
 ### Live Project Link
 
-PetNect Live Site : https://b11a12-sariakhatun.web.app/
+PetNect Live Site : [https://b11a12-sariakhatun.web.app/](https://b11a12-sariakhatun.web.app/)
 
 ### Technologies Used
 
