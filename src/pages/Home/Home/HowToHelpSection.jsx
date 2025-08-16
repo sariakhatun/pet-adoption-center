@@ -23,13 +23,13 @@ const HowToHelpSection = () => {
   ]
 
   return (
-    <section className="my-20 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
+    <section className="my-12 py-12 max-w-full mx-auto">
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-extrabold text-[#1F2937] flex items-center justify-center gap-3">
-          <FaHandsHelping className="text-[#34B7A7] animate-pulse" />
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-extrabold  flex items-center justify-center gap-3 text-[#34B7A7]">
+          <FaHandsHelping className="text-[#34B7A7] animate-pulse dark:text-white" />
           How You Can Help
         </h2>
-        <p className="mt-4 text-gray-600 text-lg max-w-2xl mx-auto">
+        <p className="mt-4 text-gray-600 text-lg max-w-2xl mx-auto dark:text-white ">
           Whether you lend your time, your voice, or your heart — you have the power to change a life.
         </p>
       </div>

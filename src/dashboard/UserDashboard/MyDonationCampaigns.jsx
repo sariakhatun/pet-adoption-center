@@ -144,8 +144,8 @@ const MyDonationCampaigns = () => {
     );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 rounded-md">
-      <h2 className="text-2xl font-bold mb-6 text-[#34B7A7] dark:text-[#34B7A7] text-center md:text-left">
+    <div className="max-w-6xl mx-auto px-4 py-8 bg-white mt-12 dark:bg-gray-900 rounded-md">
+      <h2 className="text-2xl font-bold mb-6 text-[#34B7A7] dark:text-[#34B7A7] text-center md:text-left ">
         My Donation Campaigns ({campaigns.length})
       </h2>
 

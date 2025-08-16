@@ -5,17 +5,26 @@ import AboutUsSection from './AboutUsSection';
 import SuccessStoriesSection from './SuccessStoriesSection';
 import HowToHelpSection from './HowToHelpSection';
 import PetsCategory from './PetsCategory';
+import RecentPets from './RecentPets';
+import NewsletterSection from './HowItWorksSection';
+import HowItWorksSection from './HowItWorksSection';
 
 const Home = () => {
     return (
         <div>
            
             <Banner></Banner>
-            <PetsCategory></PetsCategory>
+            
+            <HowItWorksSection></HowItWorksSection>
             <CallToAction></CallToAction>
+            
             <AboutUsSection></AboutUsSection>
+            <RecentPets></RecentPets>
+            <PetsCategory></PetsCategory>
             <SuccessStoriesSection></SuccessStoriesSection>
+            
             <HowToHelpSection></HowToHelpSection>
+            
         </div>
     );
 };

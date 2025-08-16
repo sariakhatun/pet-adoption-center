@@ -28,7 +28,7 @@ const CallToActionSection = () => {
 
   return (
     <section
-      className="my-20 px-4 sm:px-6 lg:px-12"
+      className="my-12 w-full "
       aria-labelledby="cta-section-title"
       role="region"
     >
@@ -36,33 +36,33 @@ const CallToActionSection = () => {
       <div className="text-center mb-12 max-w-3xl mx-auto">
         <h2
           id="cta-section-title"
-          className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1F2937] leading-snug flex items-center justify-center gap-2"
+          className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#1F2937] leading-snug flex items-center justify-center gap-2"
         >
-          <FaPaw className="text-[#34B7A7] text-4xl" aria-hidden="true" />
+          <FaPaw className="text-[#34B7A7]  lg:text-3xl" aria-hidden="true" />
           <span>
-            <span className="text-[#34B7A7]">Call to Action</span> Section
+            <span className="text-[#34B7A7]">Call to Action Section</span> 
           </span>
         </h2>
-        <p className="mt-4 text-lg text-gray-600">
+        <p className="mt-4 text-lg text-gray-60 dark:text-base">
           Inspire change. Give pets the life they deserve by opening your heart
           and home.
         </p>
       </div>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cards.map(({ id, title, text, image }) => (
-          <Card key={id} className="overflow-hidden shadow-md">
+          <Card key={id} className="overflow-hidden shadow-md rounded-2xl">
             <img
               src={image}
               alt={title}
               className="w-full aspect-[4/3] object-cover"
             />
             <CardHeader>
-              <CardTitle className="text-xl text-[#1F2937]">{title}</CardTitle>
+              <CardTitle className="text-xl text-[#1F2937] dark:text-white">{title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 text-sm leading-relaxed">{text}</p>
+              <p className="text-gray-600 text-sm leading-relaxed dark:text-white">{text}</p>
             </CardContent>
           </Card>
         ))}

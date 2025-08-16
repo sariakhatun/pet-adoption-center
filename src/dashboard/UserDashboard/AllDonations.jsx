@@ -209,7 +209,7 @@ const AllDonations = () => {
     );
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10 bg-white dark:bg-gray-900 rounded-md">
+    <div className="p-4 mt-8 sm:p-6 lg:p-10 bg-white dark:bg-gray-900 rounded-md">
       <h2 className="text-xl sm:text-2xl font-bold text-[#34B7A7] mb-6 text-center sm:text-left">
         All Donation Campaigns ({data.total})
       </h2>

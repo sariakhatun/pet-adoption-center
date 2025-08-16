@@ -12,6 +12,7 @@ import GoogleLogin from './GoogleLogin';
 import GithubLogin from './GithubLogin';
 import axios from 'axios';
 import useAxios from '@/hooks/useAxios';
+import LottieAnimation from './LottieAnimation';
 const Register = () => {
      const {
     register,
@@ -88,8 +89,9 @@ const Register = () => {
     setImagePreview(res.data.data.url)
   }
     return (
-    <section className="max-w-md mx-auto mt-12 p-6 bg-white shadow-lg rounded-xl">
-      <h2 className="text-2xl font-bold text-center text-[#1F2937] mb-6">
+    <div className="flex flex-col md:flex-row w-full mx-auto gap-6 lg:gap-12 mt-24 items-center px-4">
+      <section className="max-w-full flex-1 mx-auto mt-24 p-6  shadow-lg rounded-xl">
+      <h2 className="text-2xl font-bold text-center text-[#1F2937] dark:text-white mb-6">
         Create Your Account
       </h2>
 
@@ -177,6 +179,10 @@ const Register = () => {
         <GithubLogin></GithubLogin>
       </div>
     </section>
+     <div className="flex-1 flex items-center justify-center">
+          <LottieAnimation loop={true} style={{ width: 400, height: 400 }} />
+        </div>
+    </div>
   )
 }
 export default Register;

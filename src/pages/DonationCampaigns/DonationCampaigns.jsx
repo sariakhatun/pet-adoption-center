@@ -54,7 +54,7 @@ const DonationCampaigns = () => {
    console.log(error)
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-10 text-center text-red-600">
+      <div className="max-w-7xl  mx-auto px-4 py-10 text-center text-red-600">
         Failed to load campaigns.
       </div>
     );
@@ -64,7 +64,7 @@ const DonationCampaigns = () => {
   const campaigns = data?.pages.flat() || [];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="max-w-7xl mt-12 mx-auto px-4 py-10">
       <h2 className="text-3xl font-bold mb-8 text-[#34B7A7] text-center">
         Donation Campaigns
       </h2>
@@ -90,10 +90,10 @@ const DonationCampaigns = () => {
                   />
                 </CardHeader>
                 <CardContent className="p-4 space-y-2">
-                  <CardTitle className="text-xl text-[#34B7A7]">
+                  <CardTitle className="text-xl text-[#34B7A7] ">
                     {campaign.petName}
                   </CardTitle>
-                  <CardDescription className="text-sm text-gray-600">
+                  <CardDescription className="text-sm text-gray-600 dark:text-white">
                     {campaign.shortDescription}
                   </CardDescription>
                   <p className="text-sm">
@@ -103,7 +103,7 @@ const DonationCampaigns = () => {
                     <strong>Donated:</strong> ৳{campaign.donatedAmount || 0}
                   </p>
                   <Link to={`/donation-details/${campaign._id}`}>
-                    <Button variant="outline" className="w-full mt-2">
+                    <Button variant="outline" className="w-full mt-2 hover:bg-[#34B7A7] hover:text-white">
                       View Details
                     </Button>
                   </Link>

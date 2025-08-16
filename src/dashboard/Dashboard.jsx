@@ -41,19 +41,7 @@ const Dashboard = () => {
             Dashboard Home
           </NavLink>
 
-          <NavLink
-            to="/dashboard/add-pet"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive
-                  ? "bg-[#34B7A7] text-white"
-                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
-              }`
-            }
-          >
-            <FaPlusCircle />
-            Add a Pet
-          </NavLink>
+          
 
           <NavLink
             to="/dashboard/my-pets"
@@ -83,19 +71,7 @@ const Dashboard = () => {
             Adoption Request
           </NavLink>
 
-          <NavLink
-            to="/dashboard/create-campaign"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive
-                  ? "bg-[#34B7A7] text-white"
-                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
-              }`
-            }
-          >
-            <FaDonate />
-            Create Donation Campaign
-          </NavLink>
+        
 
           <NavLink
             to="/dashboard/my-campaigns"

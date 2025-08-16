@@ -9,6 +9,8 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { ThemeProvider } from './components/Demo/theme-provider';
 
+
+
 const stripePromise = loadStripe(import.meta.env.VITE_payment_key); // Replace with your Stripe publishable key
 const queryClient = new QueryClient();
 
@@ -19,6 +21,8 @@ createRoot(document.getElementById('root')).render(
       <AuthProvider>
         <Elements stripe={stripePromise}>
           <RouterProvider router={router} />
+                    
+
         </Elements>
       </AuthProvider>
     </QueryClientProvider>

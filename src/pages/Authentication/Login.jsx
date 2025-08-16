@@ -9,6 +9,7 @@ import useAuth from "@/hooks/useAuth";
 import Swal from "sweetalert2";
 import GoogleLogin from "./GoogleLogin";
 import GithubLogin from "./GithubLogin";
+import LottieAnimation from "./LottieAnimation";
 
 const Login = () => {
   const {
@@ -58,8 +59,9 @@ const Login = () => {
   };
 
   return (
-    <section className="max-w-md mx-auto mt-12 p-6 bg-white shadow-lg rounded-xl">
-      <h2 className="text-2xl font-bold text-center text-[#1F2937] mb-6">
+   <div className="flex flex-col md:flex-row w-full mx-auto gap-6 lg:gap-12 mt-24 items-center px-4">
+     <section className="flex-1 max-w-full p-6 shadow-lg rounded-xl">
+      <h2 className="text-2xl font-bold text-center text-[#1F2937] dark:text-white mb-6">
         Login Your Account
       </h2>
 
@@ -67,7 +69,7 @@ const Login = () => {
         {/* Email */}
         <div className="space-y-2">
           <Label htmlFor="email">Email Address</Label>
-          <Input
+          <Input className='w-full'
             id="email"
             type="email"
             {...register("email", { required: "Email is required" })}
@@ -100,7 +102,7 @@ const Login = () => {
               </p>
             )}
           </div>
-          <small>Forgot password</small>
+          <small className="text-blue-500 cursor-pointer">Forgot password</small>
         </div>
 
         {/* Register Button */}
@@ -111,7 +113,7 @@ const Login = () => {
           >
             Login
           </Button>
-          <p className="">
+          <p className="mt-2 text-center">
             <small>
               Don't have an account?
               <Link to="/register" className="font-bold hover:text-[#34B7A7] ">
@@ -128,6 +130,11 @@ const Login = () => {
         <GithubLogin />
       </div>
     </section>
+
+    <div className="flex-1 flex items-center justify-center">
+      <LottieAnimation loop={true} style={{ width: 400, height: 400 }} />
+    </div>
+   </div>
   );
 };
 

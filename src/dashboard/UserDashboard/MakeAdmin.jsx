@@ -68,7 +68,7 @@ const MakeAdmin = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-10">
+    <div className="p-4 mt-4 sm:p-6 lg:p-10">
       <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-6 text-[#34B7A7] text-center sm:text-left">
         Manage User Roles
       </h2>

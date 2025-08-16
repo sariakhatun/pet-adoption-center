@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 import SingleCardSkeleton from "@/skeleton/SingleCardSkeleton";
+import PetDetailsSkeleton from "@/skeleton/PetDetailsSkeleton";
 
 const PetDetails = () => {
   const { id } = useParams();
@@ -53,7 +54,7 @@ const PetDetails = () => {
   // );
   if (isLoading || !user) return (
     <div className="flex justify-center items-center h-screen">
-      <SingleCardSkeleton />
+      <PetDetailsSkeleton></PetDetailsSkeleton>
     </div>
   );
   if (isError || !pet)
@@ -96,9 +97,9 @@ const PetDetails = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
+    <div className="max-w-full my-12 mx-auto  py-12">
       {/* Pet info */}
-      <div className="flex flex-col md:flex-row gap-8 bg-white rounded-lg shadow-md p-6 border border-gray-200 items-center">
+      <div className="flex flex-col md:flex-row gap-8  rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600 items-center">
         <div className="md:w-1/2 flex justify-center items-start">
           <img
             src={pet.petImage}
@@ -108,20 +109,20 @@ const PetDetails = () => {
         </div>
 
         <div className="md:w-1/2 space-y-4">
-          <h2 className="text-4xl font-bold text-[#34B7A7]">{pet.petName}</h2>
-          <p className="text-gray-600 text-lg">
+          <h2 className="text-4xl font-bold text-[#34B7A7] ">{pet.petName}</h2>
+          <p className="text-gray-600 dark:text-white text-lg">
             <strong>Age:</strong> {pet.petAge}
           </p>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 dark:text-white text-lg">
             <strong>Location:</strong> {pet.petLocation}
           </p>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 dark:text-white text-lg">
             <strong>Category:</strong> {pet.petCategory}
           </p>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 dark:text-white text-lg">
             <strong>Short Description:</strong> {pet.shortDescription}
           </p>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 dark:text-white text-lg">
             <strong>Status:</strong>{" "}
             {pet.adopted ? (
               <span className="text-red-600 font-semibold">Adopted</span>
@@ -129,10 +130,10 @@ const PetDetails = () => {
               <span className="text-green-500 font-semibold">Available</span>
             )}
           </p>
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 dark:text-white text-sm">
             <strong>Uploaded by:</strong> {pet.userEmail}
           </p>
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 dark:text-white text-sm">
             <strong>Created At:</strong>{" "}
             {new Date(pet.createdAt).toLocaleString("en-BD", {
               dateStyle: "medium",
@@ -140,7 +141,7 @@ const PetDetails = () => {
             })}
           </p>
 
-          <p className="text-gray-700 mt-4 leading-relaxed whitespace-pre-wrap">
+          <p className="text-gray-700 dark:text-white mt-4 leading-relaxed whitespace-pre-wrap">
             <strong>Long Description:</strong>
             <br />
             {pet.longDescription}

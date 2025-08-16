@@ -185,7 +185,7 @@ const MyPets = () => {
   if (isError) return <p className="text-center mt-10 text-red-600">Failed to load pets</p>;
 
   return (
-    <div className="px-4 sm:px-6 lg:px-10 py-6 max-w-7xl mx-auto text-gray-800 dark:text-gray-100">
+    <div className="px-4 mt-12a sm:px-6 lg:px-10 py-6 max-w-7xl mx-auto text-gray-800 dark:text-gray-100">
       <h2 className="text-xl sm:text-2xl font-bold mb-6 text-[#34B7A7] text-center sm:text-left">
         My Pets ({data?.total || 0})
       </h2>

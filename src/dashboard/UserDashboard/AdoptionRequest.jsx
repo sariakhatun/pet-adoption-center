@@ -60,7 +60,7 @@ const AdoptionRequest = () => {
     );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="max-w-7xl mt-12 mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <h2 className="text-2xl sm:text-3xl font-bold text-[#34B7A7] mb-6 text-center sm:text-left">
         Adoption Requests for Your Pets
       </h2>

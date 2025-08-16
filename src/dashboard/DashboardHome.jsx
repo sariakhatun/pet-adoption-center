@@ -42,7 +42,7 @@ const quickLinks = [
 
 const DashboardHome = () => {
   const { role, roleLoading } = useUserRole();
-
+ 
   if (roleLoading) {
     return <DashboardHomeSkeleton></DashboardHomeSkeleton>
   }
@@ -95,7 +95,7 @@ const DashboardHome = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-16">
       {/* Welcome Section */}
       <section className="rounded-lg bg-gradient-to-r from-[#34B7A7] to-[#1C7A7A] p-8 text-white shadow-lg">
         <h1 className="text-4xl font-extrabold mb-2">Welcome Back!</h1>

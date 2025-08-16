@@ -17,6 +17,7 @@ import useAuth from "@/hooks/useAuth";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import Swal from "sweetalert2";
 import SingleCardSkeleton from "@/skeleton/SingleCardSkeleton";
+import PetDetailsSkeleton from "@/skeleton/PetDetailsSkeleton";
 
 const DonationDetails = () => {
   const { id } = useParams();
@@ -209,7 +210,7 @@ const DonationDetails = () => {
 
   if (isLoading)  return (
     <div className="flex justify-center items-center">
-      <SingleCardSkeleton />
+      <PetDetailsSkeleton></PetDetailsSkeleton>
     </div>
   );
   if (!campaign)
@@ -220,7 +221,7 @@ const DonationDetails = () => {
     );
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
+    <div className="max-w-full mt-12 mx-auto py-10 px-4 shadow-lg">
       <img
         src={campaign.petImage}
         alt={campaign.petName}
@@ -243,7 +244,7 @@ const DonationDetails = () => {
         </p>
       )}
 
-      <p className="text-gray-700 mt-4 whitespace-pre-line">{campaign.longDescription}</p>
+      <p className="text-gray-700 mt-4 whitespace-pre-line dark:text-white">{campaign.longDescription}</p>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
@@ -335,7 +336,7 @@ const DonationDetails = () => {
         </DialogContent>
       </Dialog>
 
-      <div className="mt-12">
+      <div className="mt-24">
         <h3 className="text-2xl font-semibold mb-6 text-[#34B7A7]">Recommended Campaigns</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {recommended.map((item) => (
@@ -346,7 +347,7 @@ const DonationDetails = () => {
                 className="w-full h-40 object-cover rounded mb-3"
               />
               <h4 className="text-xl font-bold text-[#34B7A7]">{item.petName}</h4>
-              <p className="text-sm text-gray-600 line-clamp-2">{item.shortDescription}</p>
+              <p className="text-sm text-gray-600 line-clamp-2 dark:text-white">{item.shortDescription}</p>
               <p className="text-sm mt-2">
                 <strong>Goal:</strong> ৳{item.maxDonationAmount.toFixed(2)}
               </p>

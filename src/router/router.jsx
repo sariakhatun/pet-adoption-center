@@ -59,6 +59,22 @@ export const router = createBrowserRouter([
         Component: DonationDetails,
       },
       {
+            path: "/add-pet",
+            element: (
+              <PrivateRoute>
+                <AddAPet></AddAPet>
+              </PrivateRoute>
+            ),
+          },
+          {
+            path: "/create-campaign",
+            element: 
+              <PrivateRoute>
+                <CreateDonationCampaign></CreateDonationCampaign>
+              </PrivateRoute>
+            
+          },
+      {
         path: "/login",
         Component: Login,
       },
@@ -86,14 +102,7 @@ export const router = createBrowserRouter([
             index: true, // This makes DashboardHome the default at /dashboard
             element: <DashboardHome />,
           },
-          {
-            path: "add-pet",
-            element: (
-              <PrivateRoute>
-                <AddAPet></AddAPet>
-              </PrivateRoute>
-            ),
-          },
+          
           {
             path: "my-pets",
             element: (
@@ -110,14 +119,7 @@ export const router = createBrowserRouter([
               </PrivateRoute>
             ),
           },
-          {
-            path: "create-campaign",
-            element: (
-              <PrivateRoute>
-                <CreateDonationCampaign></CreateDonationCampaign>
-              </PrivateRoute>
-            ),
-          },
+          
           {
             path: "my-campaigns",
             element: (

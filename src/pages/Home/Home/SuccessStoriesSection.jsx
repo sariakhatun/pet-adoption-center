@@ -29,15 +29,15 @@ const SuccessStoriesSection = () => {
   ];
 
   return (
-    <section className="my-20 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
+    <section className="my-12 max-w-full mx-auto">
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-extrabold text-[#1F2937] flex items-center justify-center gap-3">
-          <FaPaw className="text-[#34B7A7] text-5xl drop-shadow-sm animate-bounce" />
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-[#1F2937] flex items-center justify-center gap-3">
+          <FaPaw className="text-[#34B7A7] lg:text-3xl drop-shadow-sm animate-bounce" />
           <span className="bg-gradient-to-r from-[#34B7A7] to-[#1F93B7] bg-clip-text text-transparent">
             Success Stories
           </span>
         </h2>
-        <p className="mt-2 text-gray-600 text-lg max-w-2xl mx-auto">
+        <p className="mt-2 text-gray-600 text-lg max-w-2xl mx-auto dark:text-white">
           These heartwarming stories celebrate the beautiful bonds formed
           through adoption. From scared strays to beloved family members, see
           how PetNect has helped transform lives — one paw at a time.
@@ -57,15 +57,15 @@ const SuccessStoriesSection = () => {
                 className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute bottom-0 bg-gradient-to-t from-black/60 to-transparent text-white w-full px-4 py-2">
-                <h3 className="text-lg font-semibold">{title}</h3>
+                <h3 className="text-lg font-semibold dark:text-white">{title}</h3>
               </div>
             </div>
             <CardHeader className="flex items-center gap-3 mt-2">
               {icon}
-              <CardTitle className="text-xl text-[#1F2937]">{title}</CardTitle>
+              <CardTitle className="text-xl text-[#1F2937] dark:text-white">{title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 text-sm leading-relaxed">{text}</p>
+              <p className="text-gray-600 text-sm leading-relaxed dark:text-white">{text}</p>
             </CardContent>
           </Card>
         ))}

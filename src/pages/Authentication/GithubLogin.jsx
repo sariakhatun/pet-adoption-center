@@ -70,7 +70,7 @@ const GithubLogin = () => {
         variant="outline"
         className="w-full flex items-center justify-center gap-2"
       >
-        <FaGithub className="text-black" />
+        <FaGithub className="text-black dark:text-white" />
         Continue with GitHub
       </Button>
     </div>
