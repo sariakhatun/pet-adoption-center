@@ -7,7 +7,7 @@ PetNect is a modern, responsive web application that helps users adopt pets, cre
 
 ### Live Project Link
 
-PetNect Live Site : https://b11a12-sariakhatun.web.app/
+PetNect Live Site : [https://b11a12-sariakhatun.web.app/](https://b11a12-sariakhatun.web.app/)
 
 ### Technologies Used
 
@@ -64,8 +64,7 @@ PetNect is a user-friendly pet adoption platform that allows users to discover a
 ### How to Run Locally
 
 1. **Clone the repository:**
-
-   ```bash
+ ```bash
   git clone https://github.com/sariakhatun/pet-adoption-center
    cd pet-adoption-center
    ```
