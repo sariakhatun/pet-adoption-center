@@ -26,10 +26,10 @@ const DashboardHome = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const statsRes = await axios.get("http://localhost:5000/dashboard/stats");
+        const statsRes = await axios.get("https://b11a12-server-side-sariakhatun.vercel.app/dashboard/stats");
         setStats(statsRes.data);
 
-        const petsRes = await axios.get("http://localhost:5000/pets?all=true");
+        const petsRes = await axios.get("https://b11a12-server-side-sariakhatun.vercel.app/pets?all=true");
         const categoryCounts = {};
         petsRes.data.forEach((pet) => {
           const category = pet.petCategory || "Other";

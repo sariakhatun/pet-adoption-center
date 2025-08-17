@@ -82,7 +82,7 @@ PetNect is a user-friendly pet adoption platform that allows users to discover a
    REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
    REACT_APP_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
    REACT_APP_STRIPE_PUBLIC_KEY=your_stripe_public_key
-   REACT_APP_BACKEND_URL=http://localhost:5000
+   REACT_APP_BACKEND_URL=https://b11a12-server-side-sariakhatun.vercel.app
    ```
 
 4. **Start the development server:**
