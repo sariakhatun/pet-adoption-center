@@ -26,6 +26,8 @@ import Forbidden from "@/pages/forbidden/Forbidden";
 import AdminRoute from "./AdminRoute";
 import DashboardHome from "@/dashboard/DashboardHome";
 import ErrorPage from "@/pages/shared/ErrorPage";
+import ProfilePage from "@/dashboard/ProfilePage";
+
 
 export const router = createBrowserRouter([
   {
@@ -103,6 +105,13 @@ export const router = createBrowserRouter([
             element: <DashboardHome />,
           },
           
+          {
+            path: "profile",
+            element: (
+              <PrivateRoute>
+                <ProfilePage></ProfilePage>
+              </PrivateRoute>
+            )},
           {
             path: "my-pets",
             element: (
