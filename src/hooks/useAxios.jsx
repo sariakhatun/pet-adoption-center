@@ -2,7 +2,7 @@ import axios from 'axios';
 import React from 'react';
 
 let axiosInstance = axios.create({
-    baseURL:`https://b11a12-server-side-sariakhatun.vercel.app`
+    baseURL:`http://localhost:5000`
 })
 
 const useAxios = () => {

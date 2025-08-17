@@ -1,154 +1,118 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Bar } from "react-chartjs-2";
 import {
-  FaPaw,
-  FaHeart,
-  FaDonate,
-  FaListUl,
-  FaUserShield,
-} from "react-icons/fa";
-import useUserRole from "@/hooks/useUserRole";
-import DashboardHomeSkeleton from "@/skeleton/DashboardHomeSkeleton";
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-const quickLinks = [
-  {
-    id: 1,
-    title: "Add a Pet",
-    to: "/dashboard/add-pet",
-    icon: <FaPaw />,
-    color: "bg-[#34B7A7]",
-  },
-  {
-    id: 2,
-    title: "My Pets",
-    to: "/dashboard/my-pets",
-    icon: <FaListUl />,
-    color: "bg-[#3B82F6]",
-  },
-  {
-    id: 3,
-    title: "Adoption Requests",
-    to: "/dashboard/adoption-requests",
-    icon: <FaHeart />,
-    color: "bg-[#EF4444]",
-  },
-  {
-    id: 4,
-    title: "Create Donation Campaign",
-    to: "/dashboard/create-campaign",
-    icon: <FaDonate />,
-    color: "bg-[#F59E0B]",
-  },
-];
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const DashboardHome = () => {
-  const { role, roleLoading } = useUserRole();
- 
-  if (roleLoading) {
-    return <DashboardHomeSkeleton></DashboardHomeSkeleton>
-  }
+  const [stats, setStats] = useState({
+    totalPets: 0,
+    totalAdoptions: 0,
+    totalDonationCampaigns: 0,
+    totalDonations: 0,
+    totalAdmins: 0,
+  });
 
-  const stats = [
-    {
-      id: 1,
-      title: "Total Pets Added",
-      value: 42,
-      icon: <FaPaw className="text-3xl text-[#34B7A7]" />,
-      bg: "bg-[#D1FAE5]",
-      textColor: "text-[#065F46]",
+  const [petsByCategory, setPetsByCategory] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const statsRes = await axios.get("http://localhost:5000/dashboard/stats");
+        setStats(statsRes.data);
+
+        const petsRes = await axios.get("http://localhost:5000/pets?all=true");
+        const categoryCounts = {};
+        petsRes.data.forEach((pet) => {
+          const category = pet.petCategory || "Other";
+          categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        });
+        setPetsByCategory(categoryCounts);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const gradientColors = ["#34B7A7", "#f5acbc"];
+  const chartData = {
+    labels: Object.keys(petsByCategory),
+    datasets: [
+      {
+        label: "Number of Pets",
+        data: Object.values(petsByCategory),
+        backgroundColor: Object.keys(petsByCategory).map(
+          (_, i) => gradientColors[i % gradientColors.length]
+        ),
+        borderRadius: 6,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "top" },
+      title: { display: true, text: "Pets by Category", font: { size: 18 } },
     },
-    {
-      id: 2,
-      title: "Adoption Requests",
-      value: 17,
-      icon: <FaHeart className="text-3xl text-[#F87171]" />,
-      bg: "bg-[#FEE2E2]",
-      textColor: "text-[#B91C1C]",
+    scales: {
+      x: { ticks: { color: "#000" } },
+      y: { ticks: { color: "#000" } },
     },
-    {
-      id: 3,
-      title: "Donation Campaigns",
-      value: 5,
-      icon: <FaDonate className="text-3xl text-[#FBBF24]" />,
-      bg: "bg-[#FEF3C7]",
-      textColor: "text-[#92400E]",
-    },
-    ...(role === "admin"
-      ? [
-          {
-            id: 4,
-            title: "Total Donations",
-            value: "$2,450",
-            icon: <FaListUl className="text-3xl text-[#60A5FA]" />,
-            bg: "bg-[#DBEAFE]",
-            textColor: "text-[#1E40AF]",
-          },
-          {
-            id: 5,
-            title: "Admins Count",
-            value: 3,
-            icon: <FaUserShield className="text-3xl text-[#7C3AED]" />,
-            bg: "bg-[#EDE9FE]",
-            textColor: "text-[#5B21B6]",
-          },
-        ]
-      : []),
+  };
+
+  const statsArray = [
+    { title: "Total Pets", value: stats.totalPets },
+    { title: "Total Adoptions", value: stats.totalAdoptions },
+    { title: "Donation Campaigns", value: stats.totalDonationCampaigns },
+    { title: "Total Donations ($)", value: stats.totalDonations },
+    { title: "Admins", value: stats.totalAdmins },
   ];
 
   return (
-    <div className="space-y-8 mt-16">
-      {/* Welcome Section */}
-      <section className="rounded-lg bg-gradient-to-r from-[#34B7A7] to-[#1C7A7A] p-8 text-white shadow-lg">
-        <h1 className="text-4xl font-extrabold mb-2">Welcome Back!</h1>
-        <p className="text-lg opacity-90 max-w-xl">
-          Manage your pets, adoption requests, donation campaigns, and more from
-          your dashboard.
-        </p>
-      </section>
+    <div className="p-4 sm:p-6 md:p-8 min-h-screen bg-gray-50 dark:bg-gray-900">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-gray-800 dark:text-white">
+        Overview
+      </h1>
 
       {/* Stats Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {stats.map(({ id, title, value, icon, bg, textColor }) => (
+      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
+        {statsArray.map((stat, index) => (
           <div
-            key={id}
-            className={`flex items-center gap-4 p-6 rounded-xl shadow-md ${bg} dark:bg-opacity-30`}
+            key={stat.title}
+            className="p-4 sm:p-6 rounded-xl shadow-lg text-white flex flex-col items-center justify-center"
+            style={{
+              background: `linear-gradient(135deg, ${gradientColors[index % gradientColors.length]}, ${
+                gradientColors[(index + 1) % gradientColors.length]
+              })`,
+            }}
           >
-            <div className="p-4 rounded-full bg-white dark:bg-gray-700">
-              {icon}
-            </div>
-            <div>
-              <p
-                className={`font-semibold text-lg ${textColor} dark:text-white`}
-              >
-                {title}
-              </p>
-              <p
-                className={`text-2xl font-bold ${textColor} dark:text-white`}
-              >
-                {value}
-              </p>
-            </div>
+            <p className="text-sm sm:text-base font-semibold">{stat.title}</p>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1 sm:mt-2">
+              {stat.value}
+            </p>
           </div>
         ))}
-      </section>
+      </div>
 
-      {/* Quick Links */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4 dark:text-white">
-          Quick Actions
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {quickLinks.map(({ id, title, to, icon, color }) => (
-            <a
-              key={id}
-              href={to}
-              className={`flex items-center gap-3 p-5 rounded-lg shadow-lg text-white transition-transform transform hover:scale-105 ${color} dark:bg-opacity-90`}
-            >
-              <span className="text-3xl">{icon}</span>
-              <span className="text-lg font-semibold">{title}</span>
-            </a>
-          ))}
+      {/* Chart */}
+      <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg w-full">
+        <div className=" h-64 sm:h-80 md:h-96">
+          <Bar data={chartData} options={chartOptions} />
         </div>
-      </section>
+      </div>
     </div>
   );
 };
