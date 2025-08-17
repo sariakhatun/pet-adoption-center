@@ -60,7 +60,7 @@ const AdoptionRequest = () => {
     );
 
   return (
-    <div className="max-w-7xl mt-12 mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <h2 className="text-2xl sm:text-3xl font-bold text-[#34B7A7] mb-6 text-center sm:text-left">
         Adoption Requests for Your Pets
       </h2>
@@ -110,7 +110,7 @@ const AdoptionRequest = () => {
                   <span
                     className={`capitalize px-3 py-1 rounded text-sm ${
                       req.status === "accepted"
-                        ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-400"
+                        ? "bg-green-100 text-[#34B7A7] "
                         : req.status === "rejected"
                         ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-400"
                         : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-400"

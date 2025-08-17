@@ -209,7 +209,7 @@ const AllPets = () => {
     );
 
   return (
-    <div className="p-4 mt-12 sm:p-6 lg:p-10 bg-white dark:bg-gray-900 rounded-md">
+    <div className="p-4  sm:p-6 lg:p-10 bg-white dark:bg-gray-900 rounded-md">
       <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#34B7A7] mb-6 text-center sm:text-left">
         All Pets ({data.total})
       </h2>

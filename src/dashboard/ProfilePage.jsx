@@ -38,14 +38,14 @@ useEffect(() => {
           <img
             src={profile.photoURL || "https://i.ibb.co/2y0K3xB/default-avatar.png"}
             alt="User Avatar"
-            className="w-32 h-32 rounded-full object-cover border-4 border-indigo-500 shadow-md"
+            className="w-32 h-32 rounded-full object-cover border-4 border-[#34B7A7] shadow-md"
           />
 
           {/* Basic Info */}
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{profile.name}</h1>
             <p className="text-gray-500 dark:text-white">{profile.email}</p>
-            <span className="inline-block mt-2 px-3 py-1 text-sm bg-indigo-100 text-indigo-600 rounded-full">
+            <span className="inline-block mt-2 px-3 py-1 text-sm bg-indigo-100 text-[#34B7A7] rounded-full">
               {profile.role || "User"}
             </span>
           </div>

@@ -56,7 +56,7 @@ const MyDonation = () => {
     );
 
   return (
-    <div className="max-w-6xl mt-12 mx-auto px-4 py-8 bg-white dark:bg-gray-900 rounded-md">
+    <div className="max-w-6xl  mx-auto px-4 py-8 bg-white dark:bg-gray-900 rounded-md">
       <h2 className="text-xl sm:text-2xl font-semibold text-[#34B7A7] mb-6 text-center sm:text-left">
         My Donations (Page {page + 1})
       </h2>
