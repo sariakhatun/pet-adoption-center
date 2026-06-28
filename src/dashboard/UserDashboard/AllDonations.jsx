@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 8;
 
 const AllDonations = () => {
   const axiosSecure = useAxiosSecure();

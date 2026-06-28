@@ -12,19 +12,15 @@ import { useForm } from "react-hook-form";
 import useAuth from "@/hooks/useAuth";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import Swal from "sweetalert2";
-
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
-import SingleCardSkeleton from "@/skeleton/SingleCardSkeleton";
 import PetDetailsSkeleton from "@/skeleton/PetDetailsSkeleton";
 
 const PetDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  console.log("Pet ID from URL:", id);
-
 
   // Fetch pet data
   const {
@@ -37,30 +33,45 @@ const PetDetails = () => {
       const res = await axiosSecure.get(`/pets/${id}`);
       return res.data;
     },
-
-   
   });
 
+  // Check: user already request করেছে কিনা
+  const { data: existingRequest } = useQuery({
+    queryKey: ["adoptionCheck", id, user?.email],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/my-adoptions`);
+      const data = res.data;
+      const list = Array.isArray(data) ? data : (data?.adoptions ?? []);
+      return list.find((a) => a.petId === id) || null;
+    },
+    enabled: !!user?.email && !!id,
+  });
 
-
-
+  const alreadyRequested = !!existingRequest;
 
   const { register, handleSubmit, reset } = useForm();
 
-  // if (!user) return (
-  //   <div className="flex justify-center items-center h-screen">
-  //     <SingleCardSkeleton />
-  //   </div>
-  // );
-  if (isLoading || !user) return (
-    <div className="flex justify-center items-center h-screen">
-      <PetDetailsSkeleton></PetDetailsSkeleton>
-    </div>
-  );
+  if (isLoading || !user)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <PetDetailsSkeleton />
+      </div>
+    );
+
   if (isError || !pet)
     return <p className="text-red-500">Failed to load pet details.</p>;
 
   const onSubmit = async (formData) => {
+    // const adoptionData = {
+    //   petId: pet._id,
+    //   petName: pet.petName,
+    //   petImage: pet.petImage,
+    //   adopterName: user.displayName,
+    //   adopterEmail: user.email,
+    //   phone: formData.phone,
+    //   address: formData.address,
+    //   requestedAt: new Date().toISOString(),
+    // };
     const adoptionData = {
       petId: pet._id,
       petName: pet.petName,
@@ -69,13 +80,20 @@ const PetDetails = () => {
       adopterEmail: user.email,
       phone: formData.phone,
       address: formData.address,
+      nid: formData.nid,
+      occupation: formData.occupation,
+      houseType: formData.houseType,
+      hasGarden: formData.hasGarden,
+      hasOtherPets: formData.hasOtherPets,
+      experience: formData.experience,
+      reason: formData.reason,
       requestedAt: new Date().toISOString(),
     };
 
     try {
       const res = await axiosSecure.post("/adoptions", adoptionData);
       if (res.data.insertedId) {
-        Swal.fire({
+        await Swal.fire({
           icon: "success",
           title: "Adoption Request Submitted!",
           text: "Thank you for your interest in adopting. We will contact you soon.",
@@ -83,6 +101,7 @@ const PetDetails = () => {
           timer: 1500,
         });
         reset();
+        navigate("/dashboard/my-adoption-requests");
       }
     } catch (error) {
       console.error("Failed to submit adoption request:", error);
@@ -96,10 +115,12 @@ const PetDetails = () => {
     }
   };
 
+  const isAdopted = pet?.adopted === true || pet?.status === "adopted";
+  const isDisabled = isAdopted || alreadyRequested;
+
   return (
-    <div className="max-w-full my-12 mx-auto  py-12">
-      {/* Pet info */}
-      <div className="flex flex-col md:flex-row gap-8  rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600 items-center">
+    <div className="max-w-full my-12 mx-auto py-12">
+      <div className="flex flex-col md:flex-row gap-8 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-600 items-center">
         <div className="md:w-1/2 flex justify-center items-start">
           <img
             src={pet.petImage}
@@ -109,7 +130,7 @@ const PetDetails = () => {
         </div>
 
         <div className="md:w-1/2 space-y-4">
-          <h2 className="text-4xl font-bold text-[#34B7A7] ">{pet.petName}</h2>
+          <h2 className="text-4xl font-bold text-[#34B7A7]">{pet.petName}</h2>
           <p className="text-gray-600 dark:text-white text-lg">
             <strong>Age:</strong> {pet.petAge}
           </p>
@@ -140,84 +161,161 @@ const PetDetails = () => {
               timeStyle: "short",
             })}
           </p>
+          <div className="text-gray-700 dark:text-white mt-4 leading-relaxed prose dark:prose-invert max-w-none">
+  <strong>Long Description:</strong>
+  <div dangerouslySetInnerHTML={{ __html: pet.longDescription }} />
+</div>
 
-          <p className="text-gray-700 dark:text-white mt-4 leading-relaxed whitespace-pre-wrap">
-            <strong>Long Description:</strong>
-            <br />
-            {pet.longDescription}
-          </p>
-
-          {/* Adopt modal */}
-          <Dialog>
+          {/* Adopt Button & Modal */}
+          <Dialog >
             <DialogTrigger asChild>
-              <Button className="mt-6 bg-[#34B7A7] hover:bg-[#2fa99b] text-white w-full md:w-auto">
-                Adopt {pet.petName}
+              <Button
+                disabled={isDisabled}
+                className="mt-6 bg-[#34B7A7] hover:bg-[#2fa99b] text-white w-full md:w-auto disabled:opacity-50 "
+              >
+                {isAdopted
+                  ? "Already Adopted"
+                  : alreadyRequested
+                    ? "You Already Requested"
+                    : `Adopt ${pet.petName}`}
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Adopt {pet.petName}</DialogTitle>
-              </DialogHeader>
+           <DialogContent className="max-w-3xl w-[95vw] max-h-[90vh] mt-6 flex flex-col ">
+  <DialogHeader className={`flex-shrink-0`}>
+    <DialogTitle>Adopt {pet.petName}</DialogTitle>
+  </DialogHeader>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {/* Pet ID (read-only) */}
-                <div>
-                  <Label>Pet ID</Label>
-                  <Input value={pet._id} disabled />
-                </div>
+ <div className="overflow-y-auto flex-1 pr-1">
+   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    
+    {/* Read-only fields - 2 column */}
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <Label>Pet ID</Label>
+        <Input value={pet._id} disabled />
+      </div>
+      <div>
+        <Label>Pet Name</Label>
+        <Input value={pet.petName} disabled />
+      </div>
+      <div>
+        <Label>Your Name</Label>
+        <Input value={user.displayName} disabled />
+      </div>
+      <div>
+        <Label>Your Email</Label>
+        <Input value={user.email} disabled />
+      </div>
+    </div>
 
-                {/* Pet Name (read-only) */}
-                <div>
-                  <Label>Pet Name</Label>
-                  <Input value={pet.petName} disabled />
-                </div>
+    {/* Pet Image - full width */}
+    <div>
+      <Label>Pet Image URL</Label>
+      <Input value={pet.petImage} disabled />
+    </div>
 
-                {/* Pet Image URL (read-only) */}
-                <div>
-                  <Label>Pet Image URL</Label>
-                  <Input value={pet.petImage} disabled />
-                </div>
+    {/* Editable fields - 2 column */}
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <Label>Phone Number</Label>
+        <Input
+          type="tel"
+          placeholder="Enter your phone number"
+          {...register("phone", { required: true })}
+        />
+      </div>
+      <div>
+        <Label>NID Number</Label>
+        <Input
+          placeholder="Enter your NID number"
+          {...register("nid", { required: true })}
+        />
+      </div>
+      <div>
+        <Label>Occupation</Label>
+        <Input
+          placeholder="e.g. Engineer, Teacher"
+          {...register("occupation", { required: true })}
+        />
+      </div>
+      <div>
+        <Label>House Type</Label>
+        <select
+          {...register("houseType", { required: true })}
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white"
+        >
+          <option value="">Select house type</option>
+          <option value="apartment">Apartment</option>
+          <option value="house">House</option>
+          <option value="villa">Villa</option>
+        </select>
+      </div>
+      <div>
+        <Label>Do you have a garden/yard?</Label>
+        <select
+          {...register("hasGarden", { required: true })}
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white"
+        >
+          <option value="">Select</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div>
+        <Label>Do you have other pets?</Label>
+        <select
+          {...register("hasOtherPets", { required: true })}
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white"
+        >
+          <option value="">Select</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div className="col-span-2">
+        <Label>Previous Pet Experience</Label>
+        <select
+          {...register("experience", { required: true })}
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white"
+        >
+          <option value="">Select</option>
+          <option value="none">No experience</option>
+          <option value="some">Some experience</option>
+          <option value="experienced">Very experienced</option>
+        </select>
+      </div>
+    </div>
 
-                {/* Adopter Name (read-only) */}
-                <div>
-                  <Label>Your Name</Label>
-                  <Input value={user.displayName} disabled />
-                </div>
+    {/* Address - full width */}
+    <div>
+      <Label>Address</Label>
+      <Input
+        placeholder="Enter your address"
+        {...register("address", { required: true })}
+      />
+    </div>
 
-                {/* Adopter Email (read-only) */}
-                <div>
-                  <Label>Your Email</Label>
-                  <Input value={user.email} disabled />
-                </div>
+    {/* Reason - full width */}
+    <div>
+      <Label>Reason for Adoption</Label>
+      <textarea
+        placeholder="Why do you want to adopt this pet?"
+        {...register("reason", { required: true })}
+        rows={3}
+        className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white resize-none"
+      />
+    </div>
 
-                {/* Phone Number (editable) */}
-                <div>
-                  <Label>Phone Number</Label>
-                  <Input
-                    type="tel"
-                    placeholder="Enter your phone number"
-                    {...register("phone", { required: true })}
-                  />
-                </div>
-
-                {/* Address (editable) */}
-                <div>
-                  <Label>Address</Label>
-                  <Input
-                    placeholder="Enter your address"
-                    {...register("address", { required: true })}
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-[#34B7A7] hover:bg-[#2fa99b] text-white"
-                >
-                  Submit Adoption Request
-                </Button>
-              </form>
-            </DialogContent>
+    <Button
+      type="submit"
+      className="w-full bg-[#34B7A7] hover:bg-[#2fa99b] text-white"
+    >
+      Submit Adoption Request
+    </Button>
+  </form>
+ </div>
+</DialogContent>
           </Dialog>
         </div>
       </div>

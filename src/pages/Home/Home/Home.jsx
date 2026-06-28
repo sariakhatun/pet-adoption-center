@@ -13,9 +13,11 @@ const Home = () => {
     return (
         <div>
            
+
             <Banner></Banner>
+                                   <HowItWorksSection></HowItWorksSection>
+
             
-            <HowItWorksSection></HowItWorksSection>
             <CallToAction></CallToAction>
             
             <AboutUsSection></AboutUsSection>

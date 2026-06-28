@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Pie } from "react-chartjs-2";
@@ -29,7 +30,7 @@ const DashboardHome = () => {
         const statsRes = await axios.get("https://b11a12-server-side-sariakhatun.vercel.app/dashboard/stats");
         setStats(statsRes.data);
 
-        const petsRes = await axios.get("https://b11a12-server-side-sariakhatun.vercel.app/pets?all=true");
+        const petsRes = await axios.get("pets?all=true");
         const categoryCounts = {};
         petsRes.data.forEach((pet) => {
           const category = pet.petCategory || "Other";

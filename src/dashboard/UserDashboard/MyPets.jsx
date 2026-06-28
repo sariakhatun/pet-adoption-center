@@ -100,7 +100,7 @@ const MyPets = () => {
         header: "Status",
         accessorKey: "adopted",
         cell: ({ getValue }) =>
-          getValue ? (
+          getValue() ? (
             <span className="text-green-600 dark:text-green-400 font-semibold">Adopted</span>
           ) : (
             <span className="text-red-500 dark:text-red-400 font-semibold">Not Adopted</span>

@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "b11a12-sariakhatun"
-  }
+  },
+  "targets": {
+    "b11a12-sariakhatun": {
+      "hosting": {
+        "default": [
+          "b11a12-sariakhatun"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

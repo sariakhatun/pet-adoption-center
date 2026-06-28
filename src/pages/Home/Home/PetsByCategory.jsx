@@ -36,7 +36,7 @@ console.log('hello')
     );
 
   return (
-    <div className="max-w-6xl mx-auto py-10 px-4">
+    <div className="max-w-6xl mx-auto py-10 mt-12 px-4">
       <h2 className="text-3xl font-bold mb-6 text-[#34B7A7] capitalize">
         {category}s Available for Adoption 
       </h2>

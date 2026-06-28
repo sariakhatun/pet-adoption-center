@@ -29,6 +29,7 @@ const Dashboard = () => {
         <nav className="flex flex-col space-y-2">
           <NavLink
             to="/dashboard"
+            end  
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
                 isActive
@@ -80,6 +81,20 @@ const Dashboard = () => {
           >
             <FaHeart />
             Adoption Request
+          </NavLink>
+
+          <NavLink
+            to="/dashboard/my-adoption-requests"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                isActive
+                  ? "bg-[#34B7A7] text-white"
+                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+              }`
+            }
+          >
+            <FaPaw />
+            My Adoption Requests
           </NavLink>
 
           <NavLink
@@ -201,18 +216,18 @@ const Dashboard = () => {
             </NavLink>
 
             <NavLink
-            to="/dashboard/profile"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive
-                  ? "bg-[#34B7A7] text-white"
-                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
-              }`
-            }
-          >
-            <FaUserShield /> {/* You can use FaUser or any profile icon */}
-            Profile
-          </NavLink>
+              to="/dashboard/profile"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#34B7A7] text-white"
+                    : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+                }`
+              }
+            >
+              <FaUserShield /> {/* You can use FaUser or any profile icon */}
+              Profile
+            </NavLink>
 
             <NavLink
               to="/dashboard/add-pet"

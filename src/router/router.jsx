@@ -27,6 +27,7 @@ import AdminRoute from "./AdminRoute";
 import DashboardHome from "@/dashboard/DashboardHome";
 import ErrorPage from "@/pages/shared/ErrorPage";
 import ProfilePage from "@/dashboard/ProfilePage";
+import MyAdoptionRequests from "@/dashboard/UserDashboard/MyAdoptionRequests";
 
 
 export const router = createBrowserRouter([
@@ -125,6 +126,15 @@ export const router = createBrowserRouter([
             element: (
               <PrivateRoute>
                 <AdoptionRequest></AdoptionRequest>
+              </PrivateRoute>
+            ),
+          },
+          
+          {
+            path: "my-adoption-requests",
+            element: (
+              <PrivateRoute>
+                <MyAdoptionRequests></MyAdoptionRequests>
               </PrivateRoute>
             ),
           },

@@ -12,6 +12,7 @@ import TiptapEditor from "@/pages/shared/TiptapEditor";
 
 const CreateDonationCampaign = () => {
   const [imageUrl, setImageUrl] = useState(null);
+  const [donorType, setDonorType] = useState("individual");
   const { user } = useAuth();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
@@ -33,9 +34,7 @@ const CreateDonationCampaign = () => {
 
     try {
       const res = await axios.post(
-        `https://api.imgbb.com/1/upload?key=${
-          import.meta.env.VITE_Image_Upload_Key
-        }`,
+        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Upload_Key}`,
         formData
       );
       setImageUrl(res.data.data.url);
@@ -51,6 +50,28 @@ const CreateDonationCampaign = () => {
       return;
     }
 
+    const ownerInfo =
+      donorType === "individual"
+        ? {
+            donorType: "individual",
+            ownerName: user.displayName,
+            ownerEmail: user.email,
+            ownerPhone: data.ownerPhone,
+            ownerNID: data.ownerNID,
+            reasonForDonation: data.reasonForDonation,
+          }
+        : {
+            donorType: "rescue_center",
+            ownerName: user.displayName,
+            ownerEmail: user.email,
+            organizationName: data.organizationName,
+            registrationNumber: data.registrationNumber,
+            organizationAddress: data.organizationAddress,
+            ownerPhone: data.ownerPhone,
+            website: data.website || "",
+            reasonForDonation: data.reasonForDonation,
+          };
+
     const campaignData = {
       petName: data.petName,
       petImage: imageUrl,
@@ -63,6 +84,7 @@ const CreateDonationCampaign = () => {
       longDescription: data.longDescription,
       createdBy: user.email,
       createdAt: new Date().toISOString(),
+      ...ownerInfo,
     };
 
     try {
@@ -76,6 +98,7 @@ const CreateDonationCampaign = () => {
         });
         reset();
         setImageUrl(null);
+        setDonorType("individual");
         navigate("/dashboard/my-campaigns");
       }
     } catch (err) {
@@ -91,6 +114,137 @@ const CreateDonationCampaign = () => {
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
+        {/* Donor Type */}
+        <div>
+          <Label className="dark:text-gray-300">I am a</Label>
+          <select
+            value={donorType}
+            onChange={(e) => setDonorType(e.target.value)}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white mt-1"
+          >
+            <option value="individual">Individual</option>
+            <option value="rescue_center">Rescue Center / Organization</option>
+          </select>
+        </div>
+
+        {/* Owner Name - auto fill */}
+        <div>
+          <Label className="dark:text-gray-300">Your Name</Label>
+          <Input
+            value={user?.displayName || ""}
+            disabled
+            className="dark:bg-gray-800 dark:text-gray-100 opacity-70"
+          />
+        </div>
+
+        {/* Owner Email - auto fill */}
+        <div>
+          <Label className="dark:text-gray-300">Your Email</Label>
+          <Input
+            value={user?.email || ""}
+            disabled
+            className="dark:bg-gray-800 dark:text-gray-100 opacity-70"
+          />
+        </div>
+
+        {/* Phone - always required */}
+        <div>
+          <Label className="dark:text-gray-300">Phone Number</Label>
+          <Input
+            type="tel"
+            placeholder="Enter your phone number"
+            {...register("ownerPhone", { required: "Phone number is required" })}
+            className="dark:bg-gray-800 dark:text-gray-100"
+          />
+          {errors.ownerPhone && (
+            <p className="text-red-500 text-sm">{errors.ownerPhone.message}</p>
+          )}
+        </div>
+
+        {/* Individual Fields */}
+        {donorType === "individual" && (
+          <div>
+            <Label className="dark:text-gray-300">NID Number</Label>
+            <Input
+              placeholder="Enter your NID number"
+              {...register("ownerNID", { required: "NID is required" })}
+              className="dark:bg-gray-800 dark:text-gray-100"
+            />
+            {errors.ownerNID && (
+              <p className="text-red-500 text-sm">{errors.ownerNID.message}</p>
+            )}
+          </div>
+        )}
+
+        {/* Rescue Center Fields */}
+        {donorType === "rescue_center" && (
+          <>
+            <div>
+              <Label className="dark:text-gray-300">Organization Name</Label>
+              <Input
+                placeholder="Enter organization name"
+                {...register("organizationName", { required: "Organization name is required" })}
+                className="dark:bg-gray-800 dark:text-gray-100"
+              />
+              {errors.organizationName && (
+                <p className="text-red-500 text-sm">{errors.organizationName.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label className="dark:text-gray-300">Registration Number</Label>
+              <Input
+                placeholder="Enter registration number"
+                {...register("registrationNumber", { required: "Registration number is required" })}
+                className="dark:bg-gray-800 dark:text-gray-100"
+              />
+              {errors.registrationNumber && (
+                <p className="text-red-500 text-sm">{errors.registrationNumber.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label className="dark:text-gray-300">Organization Address</Label>
+              <Input
+                placeholder="Enter organization address"
+                {...register("organizationAddress", { required: "Address is required" })}
+                className="dark:bg-gray-800 dark:text-gray-100"
+              />
+              {errors.organizationAddress && (
+                <p className="text-red-500 text-sm">{errors.organizationAddress.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label className="dark:text-gray-300">Website (optional)</Label>
+              <Input
+                placeholder="https://your-organization.com"
+                {...register("website")}
+                className="dark:bg-gray-800 dark:text-gray-100"
+              />
+            </div>
+          </>
+        )}
+
+        {/* Reason for Donation - always required */}
+        <div>
+          <Label className="dark:text-gray-300">Reason for Donation</Label>
+          <textarea
+            placeholder="Why do you need donations for this pet?"
+            {...register("reasonForDonation", { required: "Reason is required" })}
+            rows={3}
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white resize-none mt-1"
+          />
+          {errors.reasonForDonation && (
+            <p className="text-red-500 text-sm">{errors.reasonForDonation.message}</p>
+          )}
+        </div>
+
+        {/* Divider */}
+        <hr className="border-gray-200 dark:border-gray-700" />
+        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Pet & Campaign Details</p>
+
         {/* Pet Image Upload */}
         <div>
           <Label className="dark:text-gray-300">Pet Image</Label>
@@ -101,11 +255,7 @@ const CreateDonationCampaign = () => {
             className="dark:bg-gray-800 dark:text-gray-100"
           />
           {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Preview"
-              className="w-32 h-32 mt-2 object-cover rounded"
-            />
+            <img src={imageUrl} alt="Preview" className="w-32 h-32 mt-2 object-cover rounded" />
           )}
           {!imageUrl && (
             <p className="text-red-500 text-sm mt-1">Image is required</p>
@@ -114,9 +264,7 @@ const CreateDonationCampaign = () => {
 
         {/* Pet Name */}
         <div>
-          <Label htmlFor="petName" className="dark:text-gray-300">
-            Pet Name
-          </Label>
+          <Label htmlFor="petName" className="dark:text-gray-300">Pet Name</Label>
           <Input
             id="petName"
             {...register("petName", { required: "Pet name is required" })}
@@ -129,9 +277,7 @@ const CreateDonationCampaign = () => {
 
         {/* Maximum Donation Amount */}
         <div>
-          <Label htmlFor="maxDonationAmount" className="dark:text-gray-300">
-            Maximum Donation Amount
-          </Label>
+          <Label htmlFor="maxDonationAmount" className="dark:text-gray-300">Maximum Donation Amount</Label>
           <Input
             id="maxDonationAmount"
             type="number"
@@ -143,59 +289,43 @@ const CreateDonationCampaign = () => {
             className="dark:bg-gray-800 dark:text-gray-100"
           />
           {errors.maxDonationAmount && (
-            <p className="text-red-500 text-sm">
-              {errors.maxDonationAmount.message}
-            </p>
+            <p className="text-red-500 text-sm">{errors.maxDonationAmount.message}</p>
           )}
         </div>
 
         {/* Last Date of Donation */}
         <div>
-          <Label htmlFor="donationDeadline" className="dark:text-gray-300">
-            Last Date of Donation
-          </Label>
+          <Label htmlFor="donationDeadline" className="dark:text-gray-300">Last Date of Donation</Label>
           <Input
             id="donationDeadline"
             type="date"
-            {...register("donationDeadline", {
-              required: "Donation deadline is required",
-            })}
+            {...register("donationDeadline", { required: "Donation deadline is required" })}
             className="dark:bg-gray-800 dark:text-gray-100"
           />
           {errors.donationDeadline && (
-            <p className="text-red-500 text-sm">
-              {errors.donationDeadline.message}
-            </p>
+            <p className="text-red-500 text-sm">{errors.donationDeadline.message}</p>
           )}
         </div>
 
         {/* Short Description */}
         <div>
-          <Label htmlFor="shortDescription" className="dark:text-gray-300">
-            Short Description
-          </Label>
+          <Label htmlFor="shortDescription" className="dark:text-gray-300">Short Description</Label>
           <Input
             id="shortDescription"
-            {...register("shortDescription", {
-              required: "Short description is required",
-            })}
+            {...register("shortDescription", { required: "Short description is required" })}
             className="dark:bg-gray-800 dark:text-gray-100"
           />
           {errors.shortDescription && (
-            <p className="text-red-500 text-sm">
-              {errors.shortDescription.message}
-            </p>
+            <p className="text-red-500 text-sm">{errors.shortDescription.message}</p>
           )}
         </div>
 
         {/* Long Description */}
         <div>
-          <Label htmlFor="longDescription" className="dark:text-gray-300">
-            Long Description
-          </Label>
+          <Label htmlFor="longDescription" className="dark:text-gray-300">Long Description</Label>
           <Controller
             name="longDescription"
-            control={control} // <-- pass control here
+            control={control}
             rules={{ required: "Long description is required" }}
             render={({ field }) => (
               <TiptapEditor
@@ -206,18 +336,13 @@ const CreateDonationCampaign = () => {
               />
             )}
           />
-
           {errors.longDescription && (
             <p className="text-red-500 text-sm">{errors.longDescription.message}</p>
           )}
         </div>
 
         {/* Submit Button */}
-        <Button
-          type="submit"
-          className="bg-[#34B7A7]"
-          disabled={isSubmitting}
-        >
+        <Button type="submit" className="bg-[#34B7A7] w-full" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Create Campaign"}
         </Button>
       </form>

@@ -1,6 +1,8 @@
 {
   "hosting": {
+     "site": "b11a12-sariakhatun",
     "public": "dist",
+    
     "ignore": [
       "firebase.json",
       "**/.*",
