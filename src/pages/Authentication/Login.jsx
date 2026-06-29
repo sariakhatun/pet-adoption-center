@@ -22,7 +22,7 @@ const Login = () => {
   let navigate = useNavigate();
   let { loginUser } = useAuth();
   let location = useLocation();
-  let from = location.state?.from || '/';
+  let from = location.state?.from || '/dashboard/profile';
 
   const onSubmit = (data) => {
     console.log("Registering user:", data);

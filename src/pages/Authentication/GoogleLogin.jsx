@@ -11,7 +11,7 @@ const GoogleLogin = () => {
   let navigate = useNavigate();
   let axiosInstance = useAxios()
    let location = useLocation();
-   let from = location.state?.from || '/'
+   let from = location.state?.from || '/dashboard/profile'
   let handleGoogleSignIn = () => {
     singInWithGoogle()
       .then(async (res) => {

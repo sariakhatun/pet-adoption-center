@@ -13,6 +13,10 @@ import TiptapEditor from "@/pages/shared/TiptapEditor";
 const CreateDonationCampaign = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [donorType, setDonorType] = useState("individual");
+  const [nidFrontUrl, setNidFrontUrl] = useState(null);
+  const [nidBackUrl, setNidBackUrl] = useState(null);
+  const [nidFrontUploading, setNidFrontUploading] = useState(false);
+  const [nidBackUploading, setNidBackUploading] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
@@ -28,10 +32,8 @@ const CreateDonationCampaign = () => {
   const handleImageUpload = async (e) => {
     const image = e.target.files[0];
     if (!image) return;
-
     const formData = new FormData();
     formData.append("image", image);
-
     try {
       const res = await axios.post(
         `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Upload_Key}`,
@@ -44,9 +46,34 @@ const CreateDonationCampaign = () => {
     }
   };
 
+  const handleNidUpload = async (e, side) => {
+    const image = e.target.files[0];
+    if (!image) return;
+    side === "front" ? setNidFrontUploading(true) : setNidBackUploading(true);
+    const formData = new FormData();
+    formData.append("image", image);
+    try {
+      const res = await axios.post(
+        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Upload_Key}`,
+        formData
+      );
+      const url = res.data.data.url;
+      side === "front" ? setNidFrontUrl(url) : setNidBackUrl(url);
+    } catch {
+      Swal.fire("Error", `NID ${side} image upload failed`, "error");
+    } finally {
+      side === "front" ? setNidFrontUploading(false) : setNidBackUploading(false);
+    }
+  };
+
   const onSubmit = async (data) => {
     if (!imageUrl) {
       Swal.fire("Error", "Please upload a pet image", "error");
+      return;
+    }
+
+    if (donorType === "individual" && (!nidFrontUrl || !nidBackUrl)) {
+      Swal.fire("Error", "Please upload both sides of your NID", "error");
       return;
     }
 
@@ -58,6 +85,8 @@ const CreateDonationCampaign = () => {
             ownerEmail: user.email,
             ownerPhone: data.ownerPhone,
             ownerNID: data.ownerNID,
+            nidFrontImage: nidFrontUrl,
+            nidBackImage: nidBackUrl,
             reasonForDonation: data.reasonForDonation,
           }
         : {
@@ -98,6 +127,8 @@ const CreateDonationCampaign = () => {
         });
         reset();
         setImageUrl(null);
+        setNidFrontUrl(null);
+        setNidBackUrl(null);
         setDonorType("individual");
         navigate("/dashboard/my-campaigns");
       }
@@ -106,6 +137,35 @@ const CreateDonationCampaign = () => {
       Swal.fire("Error", "Failed to create campaign", "error");
     }
   };
+
+  const inputClass = "dark:bg-gray-800 dark:text-gray-100";
+  const textareaClass = "w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white resize-none";
+
+  const UploadBox = ({ url, uploading, side, label }) => (
+    <div>
+      <Label className="dark:text-gray-300" style={{ fontSize: 13 }}>{label}</Label>
+      <div className="mt-1">
+        <label className="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer bg-white dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-300 w-fit hover:border-[#34B7A7] transition-colors">
+          <i
+            className={`ti ${uploading ? "ti-loader-2" : "ti-upload"}`}
+            style={{ fontSize: 15, color: "#34B7A7", animation: uploading ? "spin 1s linear infinite" : "none" }}
+          />
+          {uploading ? "Uploading..." : `Upload ${side}`}
+          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleNidUpload(e, side)} />
+        </label>
+        {url ? (
+          <img
+            src={url}
+            alt={`NID ${side}`}
+            className="mt-2 h-28 object-cover rounded border-2 border-[#34B7A7] cursor-pointer"
+            onClick={() => window.open(url, "_blank")}
+          />
+        ) : (
+          <p className="text-red-500 text-xs mt-1">NID {side} image required</p>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-2xl mt-20 mx-auto p-6 bg-white dark:bg-gray-900 rounded shadow space-y-6 my-12">
@@ -131,50 +191,56 @@ const CreateDonationCampaign = () => {
         {/* Owner Name - auto fill */}
         <div>
           <Label className="dark:text-gray-300">Your Name</Label>
-          <Input
-            value={user?.displayName || ""}
-            disabled
-            className="dark:bg-gray-800 dark:text-gray-100 opacity-70"
-          />
+          <Input value={user?.displayName || ""} disabled className="dark:bg-gray-800 dark:text-gray-100 opacity-70" />
         </div>
 
         {/* Owner Email - auto fill */}
         <div>
           <Label className="dark:text-gray-300">Your Email</Label>
-          <Input
-            value={user?.email || ""}
-            disabled
-            className="dark:bg-gray-800 dark:text-gray-100 opacity-70"
-          />
+          <Input value={user?.email || ""} disabled className="dark:bg-gray-800 dark:text-gray-100 opacity-70" />
         </div>
 
-        {/* Phone - always required */}
+        {/* Phone */}
         <div>
           <Label className="dark:text-gray-300">Phone Number</Label>
           <Input
             type="tel"
             placeholder="Enter your phone number"
             {...register("ownerPhone", { required: "Phone number is required" })}
-            className="dark:bg-gray-800 dark:text-gray-100"
+            className={inputClass}
           />
-          {errors.ownerPhone && (
-            <p className="text-red-500 text-sm">{errors.ownerPhone.message}</p>
-          )}
+          {errors.ownerPhone && <p className="text-red-500 text-sm">{errors.ownerPhone.message}</p>}
         </div>
 
         {/* Individual Fields */}
         {donorType === "individual" && (
-          <div>
-            <Label className="dark:text-gray-300">NID Number</Label>
-            <Input
-              placeholder="Enter your NID number"
-              {...register("ownerNID", { required: "NID is required" })}
-              className="dark:bg-gray-800 dark:text-gray-100"
-            />
-            {errors.ownerNID && (
-              <p className="text-red-500 text-sm">{errors.ownerNID.message}</p>
-            )}
-          </div>
+          <>
+            <div>
+              <Label className="dark:text-gray-300">NID Number</Label>
+              <Input
+                placeholder="Enter your NID number"
+                {...register("ownerNID", { required: "NID is required" })}
+                className={inputClass}
+              />
+              {errors.ownerNID && <p className="text-red-500 text-sm">{errors.ownerNID.message}</p>}
+            </div>
+
+            {/* NID Images - 2 column */}
+            <div className="grid grid-cols-2 gap-4">
+              <UploadBox
+                url={nidFrontUrl}
+                uploading={nidFrontUploading}
+                side="front"
+                label="NID Front Side"
+              />
+              <UploadBox
+                url={nidBackUrl}
+                uploading={nidBackUploading}
+                side="back"
+                label="NID Back Side"
+              />
+            </div>
+          </>
         )}
 
         {/* Rescue Center Fields */}
@@ -185,11 +251,9 @@ const CreateDonationCampaign = () => {
               <Input
                 placeholder="Enter organization name"
                 {...register("organizationName", { required: "Organization name is required" })}
-                className="dark:bg-gray-800 dark:text-gray-100"
+                className={inputClass}
               />
-              {errors.organizationName && (
-                <p className="text-red-500 text-sm">{errors.organizationName.message}</p>
-              )}
+              {errors.organizationName && <p className="text-red-500 text-sm">{errors.organizationName.message}</p>}
             </div>
 
             <div>
@@ -197,11 +261,9 @@ const CreateDonationCampaign = () => {
               <Input
                 placeholder="Enter registration number"
                 {...register("registrationNumber", { required: "Registration number is required" })}
-                className="dark:bg-gray-800 dark:text-gray-100"
+                className={inputClass}
               />
-              {errors.registrationNumber && (
-                <p className="text-red-500 text-sm">{errors.registrationNumber.message}</p>
-              )}
+              {errors.registrationNumber && <p className="text-red-500 text-sm">{errors.registrationNumber.message}</p>}
             </div>
 
             <div>
@@ -209,11 +271,9 @@ const CreateDonationCampaign = () => {
               <Input
                 placeholder="Enter organization address"
                 {...register("organizationAddress", { required: "Address is required" })}
-                className="dark:bg-gray-800 dark:text-gray-100"
+                className={inputClass}
               />
-              {errors.organizationAddress && (
-                <p className="text-red-500 text-sm">{errors.organizationAddress.message}</p>
-              )}
+              {errors.organizationAddress && <p className="text-red-500 text-sm">{errors.organizationAddress.message}</p>}
             </div>
 
             <div>
@@ -221,27 +281,24 @@ const CreateDonationCampaign = () => {
               <Input
                 placeholder="https://your-organization.com"
                 {...register("website")}
-                className="dark:bg-gray-800 dark:text-gray-100"
+                className={inputClass}
               />
             </div>
           </>
         )}
 
-        {/* Reason for Donation - always required */}
+        {/* Reason for Donation */}
         <div>
           <Label className="dark:text-gray-300">Reason for Donation</Label>
           <textarea
             placeholder="Why do you need donations for this pet?"
             {...register("reasonForDonation", { required: "Reason is required" })}
             rows={3}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-white resize-none mt-1"
+            className={`${textareaClass} mt-1`}
           />
-          {errors.reasonForDonation && (
-            <p className="text-red-500 text-sm">{errors.reasonForDonation.message}</p>
-          )}
+          {errors.reasonForDonation && <p className="text-red-500 text-sm">{errors.reasonForDonation.message}</p>}
         </div>
 
-        {/* Divider */}
         <hr className="border-gray-200 dark:border-gray-700" />
         <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Pet & Campaign Details</p>
 
@@ -252,7 +309,7 @@ const CreateDonationCampaign = () => {
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="dark:bg-gray-800 dark:text-gray-100"
+            className={inputClass}
           />
           {imageUrl && (
             <img src={imageUrl} alt="Preview" className="w-32 h-32 mt-2 object-cover rounded" />
@@ -268,11 +325,9 @@ const CreateDonationCampaign = () => {
           <Input
             id="petName"
             {...register("petName", { required: "Pet name is required" })}
-            className="dark:bg-gray-800 dark:text-gray-100"
+            className={inputClass}
           />
-          {errors.petName && (
-            <p className="text-red-500 text-sm">{errors.petName.message}</p>
-          )}
+          {errors.petName && <p className="text-red-500 text-sm">{errors.petName.message}</p>}
         </div>
 
         {/* Maximum Donation Amount */}
@@ -286,25 +341,21 @@ const CreateDonationCampaign = () => {
               required: "Amount is required",
               min: { value: 1, message: "Amount must be at least 1" },
             })}
-            className="dark:bg-gray-800 dark:text-gray-100"
+            className={inputClass}
           />
-          {errors.maxDonationAmount && (
-            <p className="text-red-500 text-sm">{errors.maxDonationAmount.message}</p>
-          )}
+          {errors.maxDonationAmount && <p className="text-red-500 text-sm">{errors.maxDonationAmount.message}</p>}
         </div>
 
-        {/* Last Date of Donation */}
+        {/* Donation Deadline */}
         <div>
           <Label htmlFor="donationDeadline" className="dark:text-gray-300">Last Date of Donation</Label>
           <Input
             id="donationDeadline"
             type="date"
             {...register("donationDeadline", { required: "Donation deadline is required" })}
-            className="dark:bg-gray-800 dark:text-gray-100"
+            className={inputClass}
           />
-          {errors.donationDeadline && (
-            <p className="text-red-500 text-sm">{errors.donationDeadline.message}</p>
-          )}
+          {errors.donationDeadline && <p className="text-red-500 text-sm">{errors.donationDeadline.message}</p>}
         </div>
 
         {/* Short Description */}
@@ -313,11 +364,9 @@ const CreateDonationCampaign = () => {
           <Input
             id="shortDescription"
             {...register("shortDescription", { required: "Short description is required" })}
-            className="dark:bg-gray-800 dark:text-gray-100"
+            className={inputClass}
           />
-          {errors.shortDescription && (
-            <p className="text-red-500 text-sm">{errors.shortDescription.message}</p>
-          )}
+          {errors.shortDescription && <p className="text-red-500 text-sm">{errors.shortDescription.message}</p>}
         </div>
 
         {/* Long Description */}
@@ -336,16 +385,16 @@ const CreateDonationCampaign = () => {
               />
             )}
           />
-          {errors.longDescription && (
-            <p className="text-red-500 text-sm">{errors.longDescription.message}</p>
-          )}
+          {errors.longDescription && <p className="text-red-500 text-sm">{errors.longDescription.message}</p>}
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <Button type="submit" className="bg-[#34B7A7] w-full" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Create Campaign"}
         </Button>
       </form>
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 };

@@ -3,11 +3,29 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import useAuth from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import Swal from "sweetalert2";
 import AdoptionRequestSkeleton from "@/skeleton/AdoptionRequestSkeleton";
 import jsPDF from "jspdf";
 
 const LIMIT = 5;
+
+const toBase64 = (url) =>
+  new Promise((resolve) => {
+    if (!url) return resolve(null);
+    const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/jpeg"));
+    };
+    img.onerror = () => resolve(null);
+    img.src = proxyUrl;
+  });
 
 const AdoptionRequest = () => {
   const axiosSecure = useAxiosSecure();
@@ -23,9 +41,168 @@ const AdoptionRequest = () => {
     enabled: !!user?.email,
   });
 
-  // Client-side pagination
   const totalPages = Math.ceil(requests.length / LIMIT);
   const paginatedRequests = requests.slice(page * LIMIT, page * LIMIT + LIMIT);
+
+  // ── Generates a 2-page PDF for a SINGLE accepted adoption request. ──
+  // Page 1: pet + adopter info (everything except the NID images).
+  // Page 2: just the NID Front and NID Back images.
+  const generateSingleRequestPDF = async (req) => {
+    let adopterPhoto = null;
+    try {
+      const photosRes = await axiosSecure.post("/users/photos-by-emails", {
+        emails: [req.adopterEmail],
+      });
+      const match = photosRes.data?.find((u) => u.email === req.adopterEmail);
+      adopterPhoto = match?.photoURL || null;
+    } catch (err) {
+      console.error("Failed to fetch adopter photo:", err);
+    }
+
+    const doc = new jsPDF();
+    const leftX = 14;
+    const rightX = 118;
+    const photoW = 40;
+    const photoH = 40;
+
+    const [userPhoto] = await Promise.all([
+      adopterPhoto ? toBase64(adopterPhoto) : Promise.resolve(null),
+    ]);
+
+    // ── PAGE 1: Pet + Adopter info ──
+    doc.setFontSize(18);
+    doc.setTextColor(52, 183, 167);
+    doc.text("PetNect - Adoption Request Details", 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Generated: ${new Date().toLocaleString("en-BD")}`, 14, 28);
+
+    doc.setFontSize(14);
+    doc.setTextColor(52, 183, 167);
+    doc.setFont(undefined, "bold");
+    doc.text("Pet Name:", 14, 42);
+    doc.setTextColor(30, 30, 30);
+    doc.text(req.petName, 50, 42);
+
+    // Photo, centered horizontally on the page (A4 width = 210mm).
+    const photoX = (210 - photoW) / 2;
+    const photoRowY = 50;
+
+    if (userPhoto) {
+      doc.addImage(userPhoto, "JPEG", photoX, photoRowY, photoW, photoH);
+    } else {
+      doc.setFillColor(200, 200, 200);
+      doc.rect(photoX, photoRowY, photoW, photoH, "F");
+      doc.setFontSize(7);
+      doc.setTextColor(120, 120, 120);
+      doc.setFont(undefined, "normal");
+      doc.text("No Photo", photoX + 4, photoRowY + photoH / 2);
+    }
+
+    doc.setFontSize(10);
+    doc.setTextColor(30, 30, 30);
+    doc.setFont(undefined, "bold");
+    const nameWrapped = doc.splitTextToSize(req.adopterName, photoW + 10);
+    const nameY = photoRowY + photoH + 7;
+    // Center each wrapped line under the photo.
+    const nameTextWidth = Math.max(...nameWrapped.map((l) => doc.getTextWidth(l)));
+    doc.text(nameWrapped, photoX + photoW / 2 - nameTextWidth / 2, nameY);
+
+    // Divider line goes BELOW whichever is taller: the photo+name block on the
+    // right, or the title text on the left — so it never cuts through the photo.
+    const photoBlockBottom = nameY + (nameWrapped.length - 1) * 5 + 4;
+    let y = Math.max(48, photoBlockBottom);
+    doc.setDrawColor(52, 183, 167);
+    doc.line(14, y, 196, y);
+    y += 10;
+
+    const lines = [
+      ["Adopter Name", req.adopterName],
+      ["Adopter Email", req.adopterEmail],
+      ["Phone", req.phone],
+      ["Address", req.address],
+      ["NID", req.nid || "N/A"],
+      ["Occupation", req.occupation || "N/A"],
+      ["House Type", req.houseType || "N/A"],
+      ["Has Garden", req.hasGarden || "N/A"],
+      ["Has Other Pets", req.hasOtherPets || "N/A"],
+      ["Experience", req.experience || "N/A"],
+      ["Reason", req.reason || "N/A"],
+      ["Requested At", req.requestedAt ? new Date(req.requestedAt).toLocaleString("en-BD") : "N/A"],
+    ];
+
+    doc.setFontSize(10);
+    // Full page width is available here since NID images live on page 2 —
+    // no right-side column to avoid, so text can wrap much wider.
+    const textWrapWidth = 196 - (leftX + 38);
+
+    lines.forEach(([label, value]) => {
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.setFont(undefined, "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${label}:`, leftX, y);
+      doc.setFont(undefined, "normal");
+      const wrapped = doc.splitTextToSize(String(value), textWrapWidth);
+      doc.text(wrapped, leftX + 38, y);
+      y += wrapped.length > 1 ? wrapped.length * 6 : 8;
+    });
+
+    // ── PAGE 2: NID Front + NID Back only ──
+    doc.addPage();
+
+    doc.setFontSize(16);
+    doc.setTextColor(52, 183, 167);
+    doc.setFont(undefined, "bold");
+    doc.text("National ID (NID)", 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont(undefined, "normal");
+    doc.text(`${req.adopterName} - ${req.petName}`, 14, 28);
+
+    const [nidFront, nidBack] = await Promise.all([
+      req.nidFrontImage ? toBase64(req.nidFrontImage) : Promise.resolve(null),
+      req.nidBackImage ? toBase64(req.nidBackImage) : Promise.resolve(null),
+    ]);
+
+    const nidW = 180;
+    const nidH = 108; // keeps a standard ID-card-ish aspect ratio, scaled up to fill the page width
+    const nidX = (210 - nidW) / 2; // horizontally centered on A4 (210mm wide)
+
+    let nidY = 42;
+
+    if (nidFront) {
+      doc.addImage(nidFront, "JPEG", nidX, nidY, nidW, nidH);
+    } else {
+      doc.setFillColor(230, 230, 230);
+      doc.rect(nidX, nidY, nidW, nidH, "F");
+      doc.setFontSize(10);
+      doc.setTextColor(150, 150, 150);
+      doc.text("NID Front N/A", nidX + nidW / 2 - 18, nidY + nidH / 2);
+    }
+    doc.setFontSize(9);
+    doc.setTextColor(52, 183, 167);
+    doc.text("NID Front", nidX + nidW / 2 - 10, nidY + nidH + 7);
+
+    nidY = nidY + nidH + 20;
+
+    if (nidBack) {
+      doc.addImage(nidBack, "JPEG", nidX, nidY, nidW, nidH);
+    } else {
+      doc.setFillColor(230, 230, 230);
+      doc.rect(nidX, nidY, nidW, nidH, "F");
+      doc.setFontSize(10);
+      doc.setTextColor(150, 150, 150);
+      doc.text("NID Back N/A", nidX + nidW / 2 - 18, nidY + nidH / 2);
+    }
+    doc.setFontSize(9);
+    doc.setTextColor(52, 183, 167);
+    doc.text("NID Back", nidX + nidW / 2 - 9, nidY + nidH + 7);
+
+    doc.save(`PetNect_${req.petName}_${req.adopterName}.pdf`.replace(/\s+/g, "_"));
+  };
 
   const handleStatusUpdate = async (id, status) => {
     try {
@@ -60,7 +237,18 @@ const AdoptionRequest = () => {
     }
   };
 
-  const handleDownloadAllAccepted = () => {
+  // Download the 2-page PDF for a single accepted request. Shown as a
+  // dedicated icon button in the Actions column, only enabled once accepted.
+  const handleSingleDownload = async (req) => {
+    try {
+      await generateSingleRequestPDF(req);
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to generate the PDF.", "error");
+    }
+  };
+
+  const handleDownloadAllAccepted = async () => {
     const acceptedRequests = requests.filter((req) => req.status === "accepted");
 
     if (acceptedRequests.length === 0) {
@@ -68,32 +256,43 @@ const AdoptionRequest = () => {
       return;
     }
 
+    const emails = acceptedRequests.map((r) => r.adopterEmail);
+    const photosRes = await axiosSecure.post("/users/photos-by-emails", { emails });
+    const photoMap = {};
+    photosRes.data.forEach((u) => { photoMap[u.email] = u.photoURL; });
+
+    const enriched = acceptedRequests.map((r) => ({
+      ...r,
+      adopterPhoto: photoMap[r.adopterEmail] || null,
+    }));
+
     const doc = new jsPDF();
+    const PAGE_BOTTOM = 280; // safe bottom margin for A4 (page height ~297)
 
     doc.setFontSize(18);
     doc.setTextColor(52, 183, 167);
     doc.text("PetNect - All Accepted Adoptions", 14, 20);
-
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
     doc.text(`Generated: ${new Date().toLocaleString("en-BD")}`, 14, 28);
-    doc.text(`Total Accepted: ${acceptedRequests.length}`, 14, 34);
+    doc.text(`Total Accepted: ${enriched.length}`, 14, 34);
 
     let y = 44;
 
-    acceptedRequests.forEach((req, index) => {
-      if (y > 250) { doc.addPage(); y = 20; }
+    for (let index = 0; index < enriched.length; index++) {
+      const req = enriched[index];
 
-      doc.setFontSize(12);
-      doc.setTextColor(52, 183, 167);
-      doc.setFont(undefined, "bold");
-      doc.text(`${index + 1}. ${req.petName} — ${req.adopterName}`, 14, y);
-      y += 8;
+      const leftX = 14;
+      const rightX = 118;
+      const imgW = 75;
+      const imgH = 45;
+      const photoW = 36;
+      const photoH = 36;
 
-      doc.setDrawColor(52, 183, 167);
-      doc.line(14, y, 196, y);
-      y += 6;
-
+      // ── Pre-calculate the FULL height this entry needs (header + photo+name
+      // row + divider + max(left info column, right NID column)) BEFORE drawing
+      // anything, so we never split a row across the photo/NID/description
+      // blocks. If it doesn't fit, start a fresh page first. ──
       const lines = [
         ["Adopter Name", req.adopterName],
         ["Adopter Email", req.adopterEmail],
@@ -109,21 +308,126 @@ const AdoptionRequest = () => {
         ["Requested At", new Date(req.requestedAt).toLocaleString("en-BD")],
       ];
 
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-
-      lines.forEach(([label, value]) => {
-        if (y > 270) { doc.addPage(); y = 20; }
-        doc.setFont(undefined, "bold");
-        doc.text(`${label}:`, 14, y);
-        doc.setFont(undefined, "normal");
-        const wrapped = doc.splitTextToSize(String(value), 120);
-        doc.text(wrapped, 65, y);
-        y += wrapped.length > 1 ? wrapped.length * 6 : 8;
+      doc.setFontSize(9);
+      const textWrapWidth = rightX - (leftX + 36) - 4; // stop text before the NID column starts, with a small gap
+      let leftColHeight = 0;
+      lines.forEach(([, value]) => {
+        const wrapped = doc.splitTextToSize(String(value), textWrapWidth);
+        leftColHeight += wrapped.length > 1 ? wrapped.length * 6 : 7;
       });
 
+      const nameWrappedEstimate = doc.splitTextToSize(req.adopterName, photoW + 20);
+      const photoPullUp = 22; // photo top is pulled up this much above titleY — increase this to move photo further up
+      const photoNameRowHeight = photoPullUp + photoH + 6 + nameWrappedEstimate.length * 5 + 4;
+      const rightColHeight = imgH + 5 + 10 + imgH + 5; // NID front + label + gap + NID back + label
+      const bodyHeight = Math.max(leftColHeight, rightColHeight);
+      const headerRowHeight = photoNameRowHeight + 8; // photo/name row + divider gap
+      const entryHeight = 4 + photoPullUp + headerRowHeight + bodyHeight + 16; // extra buffer so this entry's photo (pulled up) never touches the previous entry's bottom
+
+      if (y + entryHeight > PAGE_BOTTOM) {
+        doc.addPage();
+        y = 20;
+      }
+
+      // ── Section header ──
+      doc.setFontSize(12);
+      doc.setTextColor(52, 183, 167);
+      doc.setFont(undefined, "bold");
+      doc.text(`${index + 1}. ${req.petName}`, 14, y);
+      const titleY = y;
+
+      const [userPhoto, nidFront, nidBack] = await Promise.all([
+        req.adopterPhoto ? toBase64(req.adopterPhoto) : Promise.resolve(null),
+        req.nidFrontImage ? toBase64(req.nidFrontImage) : Promise.resolve(null),
+        req.nidBackImage ? toBase64(req.nidBackImage) : Promise.resolve(null),
+      ]);
+
+      const photoX = rightX + imgW - photoW; // right-align with NID image column
+      const photoRowY = titleY - photoPullUp;
+
+      if (userPhoto) {
+        doc.addImage(userPhoto, "JPEG", photoX, photoRowY, photoW, photoH);
+      } else {
+        doc.setFillColor(200, 200, 200);
+        doc.rect(photoX, photoRowY, photoW, photoH, "F");
+        doc.setFontSize(7);
+        doc.setTextColor(120, 120, 120);
+        doc.setFont(undefined, "normal");
+        doc.text("No Photo", photoX + 4, photoRowY + photoH / 2);
+      }
+
+      // Name as plain text right under the photo — no box, no border.
+      const nameY = photoRowY + photoH + 6;
+      doc.setFontSize(9);
+      doc.setTextColor(30, 30, 30);
+      doc.setFont(undefined, "bold");
+      const nameWrapped = doc.splitTextToSize(req.adopterName, photoW + 20);
+      doc.text(nameWrapped, photoX, nameY);
+
+      // y continues from below the title text (left column flow), while the
+      // photo block on the right is independently positioned above and may
+      // extend lower than the title — the divider line uses whichever is lower.
+      const photoBlockBottom = nameY + nameWrapped.length * 5 + 4;
+      y = Math.max(titleY + 6, photoBlockBottom);
+
+      // ── Divider line (drawn only under the photo/name row, full width) ──
+      doc.setDrawColor(52, 183, 167);
+      doc.line(14, y, 196, y);
       y += 8;
-    });
+
+      const startY = y;
+
+      // ── Right side: NID Front ──
+      if (nidFront) {
+        doc.addImage(nidFront, "JPEG", rightX, y, imgW, imgH);
+      } else {
+        doc.setFillColor(230, 230, 230);
+        doc.rect(rightX, y, imgW, imgH, "F");
+        doc.setFontSize(7);
+        doc.setTextColor(150, 150, 150);
+        doc.setFont(undefined, "normal");
+        doc.text("NID Front N/A", rightX + 18, y + imgH / 2);
+      }
+      doc.setFontSize(7);
+      doc.setTextColor(52, 183, 167);
+      doc.setFont(undefined, "normal");
+      doc.text("NID Front", rightX + 26, y + imgH + 5);
+
+      // ── Right side: NID Back ──
+      const nidBackY = y + imgH + 10;
+      if (nidBack) {
+        doc.addImage(nidBack, "JPEG", rightX, nidBackY, imgW, imgH);
+      } else {
+        doc.setFillColor(230, 230, 230);
+        doc.rect(rightX, nidBackY, imgW, imgH, "F");
+        doc.setFontSize(7);
+        doc.setTextColor(150, 150, 150);
+        doc.setFont(undefined, "normal");
+        doc.text("NID Back N/A", rightX + 18, nidBackY + imgH / 2);
+      }
+      doc.setFontSize(7);
+      doc.setTextColor(52, 183, 167);
+      doc.text("NID Back", rightX + 26, nidBackY + imgH + 5);
+
+      // ── Left side: info (guaranteed not to overlap NID column since we
+      // pre-measured bodyHeight above and confirmed the whole entry fits
+      // on this page — so no mid-entry page break can happen here). ──
+      y = startY;
+      doc.setFontSize(9);
+
+      lines.forEach(([label, value]) => {
+        doc.setFont(undefined, "bold");
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${label}:`, leftX, y);
+        doc.setFont(undefined, "normal");
+        const wrapped = doc.splitTextToSize(String(value), textWrapWidth);
+        doc.text(wrapped, leftX + 36, y);
+        y += wrapped.length > 1 ? wrapped.length * 6 : 7;
+      });
+
+      const rightBottom = nidBackY + imgH + 14;
+      y = Math.max(y, rightBottom) + 16; // extra buffer: next entry's photo is pulled up above its title, so this gap must absorb that
+    }
 
     doc.save(`PetNect_Accepted_Adoptions_${new Date().toLocaleDateString("en-BD")}.pdf`);
   };
@@ -194,6 +498,17 @@ const AdoptionRequest = () => {
                     <Button size="sm" variant="destructive" disabled={req.status === "rejected"} onClick={() => handleStatusUpdate(req._id, "rejected")}>
                       Reject
                     </Button>
+                    {req.status === "accepted" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-[#34B7A7] border-[#34B7A7] hover:bg-[#34B7A7]/10"
+                        onClick={() => handleSingleDownload(req)}
+                        title="Download PDF"
+                      >
+                        <Download className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -230,6 +545,17 @@ const AdoptionRequest = () => {
               <Button size="sm" variant="destructive" className="flex-1" disabled={req.status === "rejected"} onClick={() => handleStatusUpdate(req._id, "rejected")}>
                 Reject
               </Button>
+              {req.status === "accepted" && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 text-[#34B7A7] border-[#34B7A7] hover:bg-[#34B7A7]/10"
+                  onClick={() => handleSingleDownload(req)}
+                >
+                  <Download className="w-4 h-4 mr-1" />
+                  PDF
+                </Button>
+              )}
             </div>
           </div>
         ))}
